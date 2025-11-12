@@ -122,4 +122,73 @@ class SharedPreferencesHelper {
     final userId = await getUserId();
     return userId != null && userId.isNotEmpty;
   }
+
+  // ==================== GENERIC METHODS ====================
+  // These methods provide generic access to SharedPreferences for Settings and other features
+
+  /// Get a string value by key
+  static Future<String?> getString(String key) async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(key);
+  }
+
+  /// Set a string value by key
+  static Future<bool> setString(String key, String value) async {
+    final prefs = await SharedPreferences.getInstance();
+    return await prefs.setString(key, value);
+  }
+
+  /// Get an integer value by key
+  static Future<int?> getInt(String key) async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getInt(key);
+  }
+
+  /// Set an integer value by key
+  static Future<bool> setInt(String key, int value) async {
+    final prefs = await SharedPreferences.getInstance();
+    return await prefs.setInt(key, value);
+  }
+
+  /// Get a boolean value by key
+  static Future<bool?> getBool(String key) async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(key);
+  }
+
+  /// Set a boolean value by key
+  static Future<bool> setBool(String key, bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    return await prefs.setBool(key, value);
+  }
+
+  /// Get a double value by key
+  static Future<double?> getDouble(String key) async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getDouble(key);
+  }
+
+  /// Set a double value by key
+  static Future<bool> setDouble(String key, double value) async {
+    final prefs = await SharedPreferences.getInstance();
+    return await prefs.setDouble(key, value);
+  }
+
+  /// Remove a value by key
+  static Future<bool> remove(String key) async {
+    final prefs = await SharedPreferences.getInstance();
+    return await prefs.remove(key);
+  }
+
+  /// Clear all SharedPreferences data
+  static Future<bool> clear() async {
+    final prefs = await SharedPreferences.getInstance();
+    return await prefs.clear();
+  }
+
+  /// Check if a key exists
+  static Future<bool> containsKey(String key) async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.containsKey(key);
+  }
 }
