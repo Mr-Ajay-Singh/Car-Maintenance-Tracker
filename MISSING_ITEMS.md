@@ -18,10 +18,19 @@ This document tracks the implementation progress of the Car Maintenance Tracker 
 3. **Database Helper** - Updated `lib/common/data/database_helper.dart` with all tables
 4. **Firestore Helper** - Created `lib/common/data/firestore_helper.dart` for cloud sync
 5. **UI.md Templates** - Copied to all feature folders (need customization)
+6. **Vehicle Model & Service** - ✅ COMPLETE
+   - `lib/features/vehicle/data/models/vehicle_model.dart`
+   - `lib/features/vehicle/service/vehicle_service.dart`
+7. **Service Entry Model & Service** - ✅ COMPLETE
+   - `lib/features/service_log/data/models/service_entry_model.dart`
+   - `lib/features/service_log/service/service_entry_service.dart`
+8. **Fuel Entry Model** - ✅ COMPLETE
+   - `lib/features/fuel/data/models/fuel_entry_model.dart`
 
 ### 🔄 In Progress
 
-None currently
+- Fuel Entry Service (next to implement)
+- Remaining models and services
 
 ### ⏳ Pending Implementation
 
