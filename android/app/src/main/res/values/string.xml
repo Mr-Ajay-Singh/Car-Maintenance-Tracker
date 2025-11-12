@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="monthly_widget_description">Monthly Overview</string>
+    <string name="weekly_widget_description">Weekly Protein Widget</string>
+</resources>

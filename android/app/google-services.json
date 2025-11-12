@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "478602367185",
+    "project_id": "psoriasis-tracker-7873e",
+    "storage_bucket": "psoriasis-tracker-7873e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:478602367185:android:9a0e7c2d582547cfaaf5f0",
+        "android_client_info": {
+          "package_name": "com.invictus.psoriasis"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyChyp_yht3ZlTsq96MKEK37IWphOYLtN4Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
