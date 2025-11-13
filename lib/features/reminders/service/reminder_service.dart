@@ -1,0 +1,340 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:uuid/uuid.dart';
+import '../../../common/data/database_helper.dart';
+import '../../../common/data/firestore_helper.dart';
+import '../data/models/reminder_model.dart';
+
+/// ReminderService - Service class for reminder management
+class ReminderService {
+  final DatabaseHelper _dbHelper = DatabaseHelper.instance;
+
+  // CREATE
+  Future<String> addReminder(ReminderModel reminder) async {
+    final db = await _dbHelper.database;
+
+    await db.rawInsert(ReminderModel.queryInsert, [
+      reminder.id,
+      reminder.vehicleId,
+      reminder.userId,
+      reminder.title,
+      reminder.type,
+      reminder.description,
+      reminder.dueDate?.toIso8601String(),
+      reminder.dueOdometer,
+      reminder.isRecurring ? 1 : 0,
+      reminder.recurringDays,
+      reminder.recurringOdometer,
+      reminder.notificationEnabled ? 1 : 0,
+      reminder.notificationDaysBefore,
+      reminder.notificationOdometerBefore,
+      reminder.isCompleted ? 1 : 0,
+      reminder.completedDate?.toIso8601String(),
+      reminder.createdAt.toIso8601String(),
+      reminder.updatedAt.toIso8601String(),
+      reminder.isDeleted ? 1 : 0,
+      reminder.isSynced ? 1 : 0,
+      reminder.firebaseId,
+      reminder.lastSyncedAt?.toIso8601String(),
+    ]);
+
+    // Schedule notification
+    if (reminder.notificationEnabled) {
+      await _scheduleNotification(reminder);
+    }
+
+    // Try to sync immediately if online
+    if (await _isOnline()) {
+      try {
+        await _syncReminderToFirestore(reminder);
+      } catch (e) {
+        print('Sync failed: $e');
+      }
+    }
+
+    return reminder.id;
+  }
+
+  // READ
+  Future<List<ReminderModel>> getAllReminders(String userId) async {
+    final db = await _dbHelper.database;
+    final results = await db.rawQuery(ReminderModel.queryGetAll, [userId]);
+    return results.map((map) => ReminderModel.fromMap(map)).toList();
+  }
+
+  Future<List<ReminderModel>> getRemindersByVehicle(String vehicleId) async {
+    final db = await _dbHelper.database;
+    final results =
+        await db.rawQuery(ReminderModel.queryGetByVehicle, [vehicleId]);
+    return results.map((map) => ReminderModel.fromMap(map)).toList();
+  }
+
+  Future<List<ReminderModel>> getActiveReminders(String vehicleId) async {
+    final db = await _dbHelper.database;
+    final results = await db.rawQuery(ReminderModel.queryGetActive, [vehicleId]);
+    return results.map((map) => ReminderModel.fromMap(map)).toList();
+  }
+
+  Future<ReminderModel?> getReminderById(String id) async {
+    final db = await _dbHelper.database;
+    final results = await db.rawQuery(ReminderModel.queryGetById, [id]);
+    if (results.isEmpty) return null;
+    return ReminderModel.fromMap(results.first);
+  }
+
+  Future<List<ReminderModel>> getUpcomingReminders(
+    String userId,
+    int limit,
+  ) async {
+    final db = await _dbHelper.database;
+    final results = await db.rawQuery(
+      ReminderModel.queryGetUpcoming,
+      [userId, DateTime.now().toIso8601String(), limit],
+    );
+    return results.map((map) => ReminderModel.fromMap(map)).toList();
+  }
+
+  Future<List<ReminderModel>> getOverdueReminders(String userId) async {
+    final db = await _dbHelper.database;
+    final results = await db.rawQuery(
+      ReminderModel.queryGetOverdue,
+      [userId, DateTime.now().toIso8601String()],
+    );
+    return results.map((map) => ReminderModel.fromMap(map)).toList();
+  }
+
+  // UPDATE
+  Future<void> updateReminder(ReminderModel reminder) async {
+    final db = await _dbHelper.database;
+    final updatedReminder = reminder.copyWith(
+      updatedAt: DateTime.now(),
+      isSynced: false,
+    );
+
+    await db.rawUpdate(ReminderModel.queryUpdate, [
+      updatedReminder.title,
+      updatedReminder.type,
+      updatedReminder.description,
+      updatedReminder.dueDate?.toIso8601String(),
+      updatedReminder.dueOdometer,
+      updatedReminder.isRecurring ? 1 : 0,
+      updatedReminder.recurringDays,
+      updatedReminder.recurringOdometer,
+      updatedReminder.notificationEnabled ? 1 : 0,
+      updatedReminder.notificationDaysBefore,
+      updatedReminder.notificationOdometerBefore,
+      updatedReminder.updatedAt.toIso8601String(),
+      updatedReminder.id,
+    ]);
+
+    // Reschedule notification
+    await _cancelNotification(reminder.id);
+    if (updatedReminder.notificationEnabled) {
+      await _scheduleNotification(updatedReminder);
+    }
+
+    // Try to sync immediately if online
+    if (await _isOnline()) {
+      try {
+        await _syncReminderToFirestore(updatedReminder);
+      } catch (e) {
+        print('Sync failed: $e');
+      }
+    }
+  }
+
+  // COMPLETE/UNCOMPLETE
+  Future<void> markCompleted(String id) async {
+    final db = await _dbHelper.database;
+    final reminder = await getReminderById(id);
+    if (reminder == null) return;
+
+    await db.rawUpdate(ReminderModel.queryMarkCompleted, [
+      DateTime.now().toIso8601String(),
+      DateTime.now().toIso8601String(),
+      id,
+    ]);
+
+    // Cancel notification
+    await _cancelNotification(id);
+
+    // Create new reminder if recurring
+    if (reminder.isRecurring) {
+      await _createRecurringReminder(reminder);
+    }
+
+    // Sync
+    if (await _isOnline()) {
+      try {
+        final updated = await getReminderById(id);
+        if (updated != null) {
+          await _syncReminderToFirestore(updated);
+        }
+      } catch (e) {
+        print('Sync failed: $e');
+      }
+    }
+  }
+
+  Future<void> markIncomplete(String id) async {
+    final db = await _dbHelper.database;
+    await db.rawUpdate(ReminderModel.queryMarkIncomplete, [
+      DateTime.now().toIso8601String(),
+      id,
+    ]);
+
+    final reminder = await getReminderById(id);
+    if (reminder != null && reminder.notificationEnabled) {
+      await _scheduleNotification(reminder);
+    }
+
+    // Sync
+    if (await _isOnline()) {
+      try {
+        final updated = await getReminderById(id);
+        if (updated != null) {
+          await _syncReminderToFirestore(updated);
+        }
+      } catch (e) {
+        print('Sync failed: $e');
+      }
+    }
+  }
+
+  // DELETE (soft delete)
+  Future<void> deleteReminder(String id) async {
+    final db = await _dbHelper.database;
+    final reminder = await getReminderById(id);
+
+    await db.rawUpdate(ReminderModel.querySoftDelete, [
+      DateTime.now().toIso8601String(),
+      id,
+    ]);
+
+    // Cancel notification
+    await _cancelNotification(id);
+
+    // Try to sync deletion to Firestore
+    if (await _isOnline() && reminder != null && reminder.firebaseId != null) {
+      try {
+        await _deleteFromFirestore(reminder.userId, reminder.firebaseId!);
+      } catch (e) {
+        print('Sync failed: $e');
+      }
+    }
+  }
+
+  // NOTIFICATION MANAGEMENT
+  /// Schedule notification for a reminder
+  /// TODO: Integrate with flutter_local_notifications
+  Future<void> _scheduleNotification(ReminderModel reminder) async {
+    if (!reminder.notificationEnabled || reminder.dueDate == null) return;
+
+    // Calculate notification date
+    final notificationDate = reminder.dueDate!
+        .subtract(Duration(days: reminder.notificationDaysBefore));
+
+    // Only schedule if notification date is in the future
+    if (notificationDate.isAfter(DateTime.now())) {
+      // TODO: Use flutter_local_notifications to schedule
+      print('Scheduling notification for reminder: ${reminder.id}');
+      print('Notification date: $notificationDate');
+      print('Due date: ${reminder.dueDate}');
+      print('Title: ${reminder.title}');
+
+      // Placeholder for actual implementation:
+      // await FlutterLocalNotificationsPlugin().zonedSchedule(
+      //   reminder.id.hashCode,
+      //   reminder.title,
+      //   reminder.description ?? 'Reminder is due soon',
+      //   tz.TZDateTime.from(notificationDate, tz.local),
+      //   NotificationDetails(...),
+      //   androidAllowWhileIdle: true,
+      //   uiLocalNotificationDateInterpretation:
+      //       UILocalNotificationDateInterpretation.absoluteTime,
+      // );
+    }
+  }
+
+  /// Cancel notification for a reminder
+  Future<void> _cancelNotification(String reminderId) async {
+    print('Canceling notification for reminder: $reminderId');
+
+    // TODO: Use flutter_local_notifications to cancel
+    // await FlutterLocalNotificationsPlugin().cancel(reminderId.hashCode);
+  }
+
+  /// Create a new recurring reminder when the current one is completed
+  Future<void> _createRecurringReminder(ReminderModel completed) async {
+    if (!completed.isRecurring) return;
+
+    DateTime? newDueDate;
+    int? newDueOdometer;
+
+    // Calculate new due date
+    if (completed.dueDate != null && completed.recurringDays != null) {
+      newDueDate =
+          completed.dueDate!.add(Duration(days: completed.recurringDays!));
+    }
+
+    // Calculate new due odometer
+    if (completed.dueOdometer != null && completed.recurringOdometer != null) {
+      newDueOdometer = completed.dueOdometer! + completed.recurringOdometer!;
+    }
+
+    // Create new reminder
+    final newReminder = completed.copyWith(
+      id: const Uuid().v4(),
+      dueDate: newDueDate,
+      dueOdometer: newDueOdometer,
+      isCompleted: false,
+      completedDate: null,
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
+      isSynced: false,
+      firebaseId: null,
+      lastSyncedAt: null,
+    );
+
+    await addReminder(newReminder);
+  }
+
+  // SYNC OPERATIONS
+  Future<void> syncUnsyncedReminders(String userId) async {
+    if (!await _isOnline()) return;
+
+    final db = await _dbHelper.database;
+    final unsyncedRows = await db.rawQuery(
+      ReminderModel.queryGetUnsynced,
+      [userId],
+    );
+
+    for (final row in unsyncedRows) {
+      try {
+        final reminder = ReminderModel.fromMap(row);
+        await _syncReminderToFirestore(reminder);
+      } catch (e) {
+        print('Failed to sync reminder: $e');
+      }
+    }
+  }
+
+  Future<void> _syncReminderToFirestore(ReminderModel reminder) async {
+    final firebaseId = await FirestoreHelper.pushReminder(reminder);
+
+    final db = await _dbHelper.database;
+    await db.rawUpdate(ReminderModel.queryMarkSynced, [
+      firebaseId,
+      DateTime.now().toIso8601String(),
+      reminder.id,
+    ]);
+  }
+
+  Future<void> _deleteFromFirestore(String userId, String firebaseId) async {
+    await FirestoreHelper.deleteReminder(userId, firebaseId);
+  }
+
+  Future<bool> _isOnline() async {
+    final connectivityResult = await Connectivity().checkConnectivity();
+    return connectivityResult != ConnectivityResult.none;
+  }
+}
