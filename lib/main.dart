@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'common/routes/app_router.dart';
 import 'common/theme/themes.dart';
+import 'utils/firebase/firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -10,8 +11,10 @@ void main() async {
   // Initialize timezone
   tz.initializeTimeZones();
 
-  // Initialize Firebase
-  await Firebase.initializeApp();
+  // Initialize Firebase with proper options
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
   runApp(const MyApp());
 }

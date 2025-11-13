@@ -90,7 +90,12 @@ class _AddExpensePageState extends State<AddExpensePage> {
               decoration: const InputDecoration(
                   labelText: 'Amount', border: OutlineInputBorder()),
               keyboardType: TextInputType.number,
-              validator: (v) => v?.isEmpty == true ? 'Required' : null,
+              validator: (v) {
+                if (v?.isEmpty == true) return 'Required';
+                final amount = double.tryParse(v!);
+                if (amount == null || amount < 0) return 'Must be 0 or greater';
+                return null;
+              },
             ),
             const SizedBox(height: 32),
             ElevatedButton(

@@ -149,13 +149,13 @@ class ServiceEntryModel {
   ''';
 
   // Helper methods for parts JSON conversion
-  static String _partsToJson(List<ServicePart> parts) {
+  static String partsToJson(List<ServicePart> parts) {
     if (parts.isEmpty) return '[]';
     final list = parts.map((p) => p.toMap()).toList();
     return jsonEncode(list);
   }
 
-  static List<ServicePart> _partsFromJson(String? json) {
+  static List<ServicePart> partsFromJson(String? json) {
     if (json == null || json.isEmpty || json == '[]') return [];
     try {
       final List<dynamic> list = jsonDecode(json);
@@ -176,7 +176,7 @@ class ServiceEntryModel {
       'date': date.toIso8601String(),
       'odometer': odometer,
       'serviceType': serviceType,
-      'parts': _partsToJson(parts),
+      'parts': partsToJson(parts),
       'totalCost': totalCost,
       'shopId': shopId,
       'shopName': shopName,
@@ -200,7 +200,7 @@ class ServiceEntryModel {
       date: DateTime.parse(map['date'] as String),
       odometer: map['odometer'] as int,
       serviceType: map['serviceType'] as String,
-      parts: _partsFromJson(map['parts'] as String?),
+      parts: partsFromJson(map['parts'] as String?),
       totalCost: map['totalCost'] as double,
       shopId: map['shopId'] as String?,
       shopName: map['shopName'] as String?,

@@ -92,7 +92,12 @@ class _AddServicePageState extends State<AddServicePage> {
               decoration: const InputDecoration(
                   labelText: 'Odometer (km)', border: OutlineInputBorder()),
               keyboardType: TextInputType.number,
-              validator: (v) => v?.isEmpty == true ? 'Required' : null,
+              validator: (v) {
+                if (v?.isEmpty == true) return 'Required';
+                final odometer = int.tryParse(v!);
+                if (odometer == null || odometer < 0) return 'Must be 0 or greater';
+                return null;
+              },
             ),
             const SizedBox(height: 16),
             TextFormField(
@@ -100,7 +105,12 @@ class _AddServicePageState extends State<AddServicePage> {
               decoration: const InputDecoration(
                   labelText: 'Total Cost', border: OutlineInputBorder()),
               keyboardType: TextInputType.number,
-              validator: (v) => v?.isEmpty == true ? 'Required' : null,
+              validator: (v) {
+                if (v?.isEmpty == true) return 'Required';
+                final cost = double.tryParse(v!);
+                if (cost == null || cost < 0) return 'Must be 0 or greater';
+                return null;
+              },
             ),
             const SizedBox(height: 16),
             TextFormField(
