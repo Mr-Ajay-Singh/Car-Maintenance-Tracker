@@ -12,9 +12,11 @@ void main() async {
   tz.initializeTimeZones();
 
   // Initialize Firebase with proper options
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+  } catch (e) {}
 
   runApp(const MyApp());
 }
