@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:psoriasis_tracker/utils/commonUi/responsive_wrapper.dart';
+import 'package:car_maintenance_tracker/utils/commonUi/responsive_wrapper.dart';
 
 class ResponsiveApp extends StatelessWidget {
   final MaterialApp materialApp;

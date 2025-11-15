@@ -1,5 +1,7 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:uuid/uuid.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:timezone/timezone.dart' as tz;
 import '../../../common/data/database_helper.dart';
 import '../../../common/data/firestore_helper.dart';
 import '../data/models/reminder_model.dart';
@@ -7,6 +9,8 @@ import '../data/models/reminder_model.dart';
 /// ReminderService - Service class for reminder management
 class ReminderService {
   final DatabaseHelper _dbHelper = DatabaseHelper.instance;
+  final FlutterLocalNotificationsPlugin _notificationsPlugin =
+      FlutterLocalNotificationsPlugin();
 
   // CREATE
   Future<String> addReminder(ReminderModel reminder) async {
@@ -224,43 +228,113 @@ class ReminderService {
   }
 
   // NOTIFICATION MANAGEMENT
+  /// Initialize notification plugin
+  Future<void> initializeNotifications() async {
+    const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
+    const iosSettings = DarwinInitializationSettings(
+      requestAlertPermission: true,
+      requestBadgePermission: true,
+      requestSoundPermission: true,
+    );
+    const initSettings = InitializationSettings(
+      android: androidSettings,
+      iOS: iosSettings,
+    );
+
+    await _notificationsPlugin.initialize(
+      initSettings,
+      onDidReceiveNotificationResponse: _onNotificationTapped,
+    );
+
+    // Request permissions for iOS
+    await _notificationsPlugin
+        .resolvePlatformSpecificImplementation<
+            IOSFlutterLocalNotificationsPlugin>()
+        ?.requestPermissions(
+          alert: true,
+          badge: true,
+          sound: true,
+        );
+
+    print('✅ Notifications initialized');
+  }
+
+  /// Handle notification tap
+  void _onNotificationTapped(NotificationResponse response) {
+    print('Notification tapped: ${response.payload}');
+    // Handle navigation based on payload
+  }
+
   /// Schedule notification for a reminder
-  /// TODO: Integrate with flutter_local_notifications
   Future<void> _scheduleNotification(ReminderModel reminder) async {
     if (!reminder.notificationEnabled || reminder.dueDate == null) return;
 
-    // Calculate notification date
-    final notificationDate = reminder.dueDate!
-        .subtract(Duration(days: reminder.notificationDaysBefore));
+    try {
+      // Calculate notification date
+      final notificationDate = reminder.dueDate!
+          .subtract(Duration(days: reminder.notificationDaysBefore));
 
-    // Only schedule if notification date is in the future
-    if (notificationDate.isAfter(DateTime.now())) {
-      // TODO: Use flutter_local_notifications to schedule
-      print('Scheduling notification for reminder: ${reminder.id}');
-      print('Notification date: $notificationDate');
-      print('Due date: ${reminder.dueDate}');
-      print('Title: ${reminder.title}');
+      // Only schedule if notification date is in the future
+      if (notificationDate.isAfter(DateTime.now())) {
+        final scheduledDate = tz.TZDateTime.from(notificationDate, tz.local);
 
-      // Placeholder for actual implementation:
-      // await FlutterLocalNotificationsPlugin().zonedSchedule(
-      //   reminder.id.hashCode,
-      //   reminder.title,
-      //   reminder.description ?? 'Reminder is due soon',
-      //   tz.TZDateTime.from(notificationDate, tz.local),
-      //   NotificationDetails(...),
-      //   androidAllowWhileIdle: true,
-      //   uiLocalNotificationDateInterpretation:
-      //       UILocalNotificationDateInterpretation.absoluteTime,
-      // );
+        const androidDetails = AndroidNotificationDetails(
+          'reminders_channel',
+          'Vehicle Maintenance Reminders',
+          channelDescription: 'Notifications for upcoming vehicle maintenance',
+          importance: Importance.high,
+          priority: Priority.high,
+          icon: '@mipmap/ic_launcher',
+        );
+
+        const iosDetails = DarwinNotificationDetails(
+          presentAlert: true,
+          presentBadge: true,
+          presentSound: true,
+        );
+
+        const details = NotificationDetails(
+          android: androidDetails,
+          iOS: iosDetails,
+        );
+
+        await _notificationsPlugin.zonedSchedule(
+          reminder.id.hashCode,
+          reminder.title,
+          reminder.description ?? 'Maintenance reminder is coming up',
+          scheduledDate,
+          details,
+          androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+          uiLocalNotificationDateInterpretation:
+              UILocalNotificationDateInterpretation.absoluteTime,
+          payload: reminder.id,
+        );
+
+        print('✅ Notification scheduled for ${reminder.title} at $notificationDate');
+      }
+    } catch (e) {
+      print('❌ Error scheduling notification: $e');
     }
   }
 
   /// Cancel notification for a reminder
   Future<void> _cancelNotification(String reminderId) async {
-    print('Canceling notification for reminder: $reminderId');
+    try {
+      await _notificationsPlugin.cancel(reminderId.hashCode);
+      print('✅ Notification canceled for reminder: $reminderId');
+    } catch (e) {
+      print('❌ Error canceling notification: $e');
+    }
+  }
 
-    // TODO: Use flutter_local_notifications to cancel
-    // await FlutterLocalNotificationsPlugin().cancel(reminderId.hashCode);
+  /// Cancel all notifications
+  Future<void> cancelAllNotifications() async {
+    try {
+      await _notificationsPlugin.cancelAll();
+      print('✅ All notifications canceled');
+    } catch (e) {
+      print('❌ Error canceling all notifications: $e');
+    }
   }
 
   /// Create a new recurring reminder when the current one is completed

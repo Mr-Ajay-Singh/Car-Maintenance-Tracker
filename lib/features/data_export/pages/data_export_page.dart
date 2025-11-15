@@ -1,11 +1,12 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:psoriasis_tracker/features/data_export/services/data_export_service.dart';
-import 'package:psoriasis_tracker/features/data_export/services/file_service.dart';
+import 'package:car_maintenance_tracker/features/data_export/services/data_export_service.dart';
+import 'package:car_maintenance_tracker/features/data_export/services/file_service.dart';
 
 import '../../../l10n/app_localizations.dart';
 import '../../../utils/mixpanel_utils.dart';
+import '../../../common/data/shared_preferences_helper.dart';
 
 class DataExportPage extends StatefulWidget {
   final DateTime? initialStartDate;
@@ -40,7 +41,7 @@ class _DataExportPageState extends State<DataExportPage> {
     _startDate = widget.initialStartDate ??
         DateTime.now().subtract(const Duration(days: 30));
     _endDate = widget.initialEndDate ?? DateTime.now();
-    _selectedDataType = widget.initialDataType ?? ExportDataType.fiber;
+    _selectedDataType = widget.initialDataType ?? ExportDataType.serviceEntries;
     _checkPremiumStatus();
     MixpanelUtils.trackEventForOpen('data_export_page_opened');
   }
@@ -226,27 +227,26 @@ class _DataExportPageState extends State<DataExportPage> {
   }
 
   Future<List<Map<String, dynamic>>> _getDataForExport() async {
+    // Get user ID from SharedPreferences
+    final userId = await SharedPreferencesHelper.getUserId();
+    if (userId == null || userId.isEmpty) {
+      throw Exception('User not logged in');
+    }
+
     switch (_selectedDataType) {
-      // case ExportDataType.protein:
-      //   return await DataExportService.getProteinData(_startDate, _endDate);
-      // case ExportDataType.water:
-      //   return await DataExportService.getWaterData(_startDate, _endDate);
-      // case ExportDataType.weight:
-      //   return await DataExportService.getWeightData(_startDate, _endDate);
-      // case ExportDataType.fiber:
-      //   return await DataExportService.getFiberData(_startDate, _endDate);
-      case ExportDataType.water:
-        // TODO: Handle this case.
-        throw UnimplementedError();
-      case ExportDataType.weight:
-        // TODO: Handle this case.
-        throw UnimplementedError();
-      case ExportDataType.protein:
-        // TODO: Handle this case.
-        throw UnimplementedError();
-      case ExportDataType.fiber:
-        // TODO: Handle this case.
-        throw UnimplementedError();
+      case ExportDataType.vehicles:
+        return await DataExportService.getVehicleData(userId, _startDate, _endDate);
+      case ExportDataType.serviceEntries:
+        return await DataExportService.getServiceEntryData(userId, _startDate, _endDate);
+      case ExportDataType.fuelEntries:
+        return await DataExportService.getFuelEntryData(userId, _startDate, _endDate);
+      case ExportDataType.reminders:
+        return await DataExportService.getReminderData(userId, _startDate, _endDate);
+      case ExportDataType.expenses:
+        return await DataExportService.getExpenseData(userId, _startDate, _endDate);
+      case ExportDataType.allData:
+        // For allData, we can combine all data types or just use service entries as default
+        return await DataExportService.getServiceEntryData(userId, _startDate, _endDate);
     }
   }
 
@@ -256,23 +256,21 @@ class _DataExportPageState extends State<DataExportPage> {
       return _getDataForExport();
     }
 
-    // Otherwise use dummy data
+    // Otherwise use dummy data for preview
     switch (_selectedDataType) {
-      case ExportDataType.protein:
-        return DataExportService.getDummyProteinData(_startDate, _endDate);
-      case ExportDataType.water:
-        return DataExportService.getDummyWaterData(_startDate, _endDate);
-      case ExportDataType.weight:
-        return DataExportService.getDummyWeightData(_startDate, _endDate);
-      case ExportDataType.fiber:
-        // Use protein dummy data for fiber preview
-        return DataExportService.getDummyProteinData(_startDate, _endDate).map((item) {
-          return {
-            'date': item['date'],
-            'item': item['item'],
-            'fiber': item['protein'],
-          };
-        }).toList();
+      case ExportDataType.vehicles:
+        // For vehicles, return empty list or basic info
+        return [];
+      case ExportDataType.serviceEntries:
+        return DataExportService.getDummyServiceData(_startDate, _endDate);
+      case ExportDataType.fuelEntries:
+        return DataExportService.getDummyFuelData(_startDate, _endDate);
+      case ExportDataType.reminders:
+        return DataExportService.getDummyReminderData(_startDate, _endDate);
+      case ExportDataType.expenses:
+        return DataExportService.getDummyExpenseData(_startDate, _endDate);
+      case ExportDataType.allData:
+        return DataExportService.getDummyServiceData(_startDate, _endDate);
     }
   }
 
@@ -563,14 +561,18 @@ class _DataExportPageState extends State<DataExportPage> {
 
   String _getDataTypeDisplayName() {
     switch (_selectedDataType) {
-      case ExportDataType.protein:
-        return AppLocalizations.of(context)!.proteinData;
-      case ExportDataType.water:
-        return AppLocalizations.of(context)!.waterData;
-      case ExportDataType.weight:
-        return AppLocalizations.of(context)!.weightData;
-      case ExportDataType.fiber:
-        return 'Fiber Data';
+      case ExportDataType.vehicles:
+        return 'Vehicle Data';
+      case ExportDataType.serviceEntries:
+        return 'Service Records';
+      case ExportDataType.fuelEntries:
+        return 'Fuel Records';
+      case ExportDataType.reminders:
+        return 'Maintenance Reminders';
+      case ExportDataType.expenses:
+        return 'Expense Records';
+      case ExportDataType.allData:
+        return 'All Vehicle Data';
     }
   }
 
