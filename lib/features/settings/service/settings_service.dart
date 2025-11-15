@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:local_authentication/local_authentication.dart';
 import '../../../common/data/database_helper.dart';
 import '../../../common/data/firestore_helper.dart';
 import '../../../common/data/shared_preferences_helper.dart';
 import '../data/models/settings_model.dart';
+import '../../data_export/services/data_export_service.dart';
 
 /// SettingsService - Service class for app settings and preferences management
 class SettingsService {
@@ -196,64 +199,117 @@ class SettingsService {
 
   // ACCOUNT ACTIONS
   /// Delete all user data from local database and cloud
-  /// TODO: Integrate with Firebase Auth when package is added
   Future<void> deleteAccount(String userId) async {
-    // Delete all local data
-    final dbHelper = DatabaseHelper.instance;
-    await dbHelper.deleteAllUserData(userId);
+    try {
+      // Delete all local data
+      final dbHelper = DatabaseHelper.instance;
+      await dbHelper.deleteAllUserData(userId);
 
-    // Delete from Firestore
-    await FirestoreHelper.deleteUserData(userId);
+      // Delete from Firestore
+      await FirestoreHelper.deleteUserData(userId);
 
-    // Clear settings
-    await clearAllData();
+      // Clear settings
+      await clearAllData();
 
-    // Delete Firebase Auth account
-    // TODO: Uncomment when firebase_auth is added to pubspec.yaml
-    // await FirebaseAuth.instance.currentUser?.delete();
-    print('Account deletion: Firebase Auth integration pending');
+      // Delete Firebase Auth account
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        await user.delete();
+        print('✅ Account deleted successfully');
+      }
+    } catch (e) {
+      print('❌ Error deleting account: $e');
+      rethrow;
+    }
   }
 
-  /// Export all user data
-  /// TODO: Implement full data export functionality
-  Future<void> exportAllData(String userId) async {
-    // Export logic handled by data_export feature
-    print('Exporting all data for user: $userId');
-    // TODO: Implement CSV/JSON export for all user data
+  /// Export all user data to CSV format
+  Future<Map<String, dynamic>> exportAllData(String userId) async {
+    try {
+      final now = DateTime.now();
+      final oneYearAgo = now.subtract(const Duration(days: 365));
+
+      // Export all data types
+      final vehiclesData = await DataExportService.getVehicleData(userId, oneYearAgo, now);
+      final serviceData = await DataExportService.getServiceEntryData(userId, oneYearAgo, now);
+      final fuelData = await DataExportService.getFuelEntryData(userId, oneYearAgo, now);
+      final remindersData = await DataExportService.getReminderData(userId, oneYearAgo, now);
+      final expensesData = await DataExportService.getExpenseData(userId, oneYearAgo, now);
+
+      print('✅ Exported all data: ${vehiclesData.length} vehicles, ${serviceData.length} services, ${fuelData.length} fuel entries, ${remindersData.length} reminders, ${expensesData.length} expenses');
+
+      return {
+        'vehicles': vehiclesData,
+        'serviceEntries': serviceData,
+        'fuelEntries': fuelData,
+        'reminders': remindersData,
+        'expenses': expensesData,
+        'exportDate': now.toIso8601String(),
+      };
+    } catch (e) {
+      print('❌ Error exporting data: $e');
+      rethrow;
+    }
   }
 
   // BIOMETRIC AUTH
   /// Check if device supports biometric authentication
-  /// TODO: Integrate with local_auth package
   Future<bool> isBiometricsAvailable() async {
-    // Check if device supports biometrics
     try {
-      // TODO: Uncomment when local_auth is added to pubspec.yaml
-      // final localAuth = LocalAuthentication();
-      // return await localAuth.canCheckBiometrics;
-      print('Biometric check: local_auth package integration pending');
-      return false; // Placeholder
+      final localAuth = LocalAuthentication();
+      final canCheckBiometrics = await localAuth.canCheckBiometrics;
+      final isDeviceSupported = await localAuth.isDeviceSupported();
+
+      print('🔐 Biometrics available: $canCheckBiometrics, Device supported: $isDeviceSupported');
+      return canCheckBiometrics && isDeviceSupported;
     } catch (e) {
+      print('❌ Error checking biometrics: $e');
       return false;
     }
   }
 
+  /// Get available biometric types on this device
+  Future<List<BiometricType>> getAvailableBiometrics() async {
+    try {
+      final localAuth = LocalAuthentication();
+      return await localAuth.getAvailableBiometrics();
+    } catch (e) {
+      print('❌ Error getting available biometrics: $e');
+      return [];
+    }
+  }
+
   /// Authenticate using biometrics (fingerprint, face ID)
-  /// TODO: Integrate with local_auth package
   Future<bool> authenticateWithBiometrics() async {
     try {
-      // TODO: Uncomment when local_auth is added to pubspec.yaml
-      // final localAuth = LocalAuthentication();
-      // return await localAuth.authenticate(
-      //   localizedReason: 'Authenticate to access your vehicle data',
-      //   options: const AuthenticationOptions(
-      //     useErrorDialogs: true,
-      //     stickyAuth: true,
-      //   ),
-      // );
-      print('Biometric auth: local_auth package integration pending');
-      return false; // Placeholder
+      final localAuth = LocalAuthentication();
+
+      // Check if biometrics are available
+      final isAvailable = await isBiometricsAvailable();
+      if (!isAvailable) {
+        print('❌ Biometrics not available on this device');
+        return false;
+      }
+
+      // Authenticate
+      final authenticated = await localAuth.authenticate(
+        localizedReason: 'Authenticate to access your vehicle data',
+        options: const AuthenticationOptions(
+          useErrorDialogs: true,
+          stickyAuth: true,
+          biometricOnly: true,
+        ),
+      );
+
+      if (authenticated) {
+        print('✅ Biometric authentication successful');
+      } else {
+        print('❌ Biometric authentication failed');
+      }
+
+      return authenticated;
     } catch (e) {
+      print('❌ Error during biometric authentication: $e');
       return false;
     }
   }
