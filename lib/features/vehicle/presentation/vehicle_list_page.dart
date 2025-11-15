@@ -155,7 +155,7 @@ class _VehicleListPageState extends State<VehicleListPage> {
                 children: [
                   const SizedBox(height: 4),
                   Text('${vehicle.currentOdometer} km'),
-                  if (vehicle.licensePlate.isNotEmpty)
+                  if (vehicle.licensePlate != null && vehicle.licensePlate!.isNotEmpty)
                     Text('License: ${vehicle.licensePlate}'),
                 ],
               ),

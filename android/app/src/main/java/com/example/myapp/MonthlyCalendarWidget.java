@@ -1,4 +1,4 @@
-package com.invictus.psoriasis;
+package com.invictus.carmaintenance;
 
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
@@ -22,7 +22,7 @@ public class MonthlyCalendarWidget extends AppWidgetProvider {
         "January", "February", "March", "April", "May", "June",
         "July", "August", "September", "October", "November", "December"
     };
-    public static final String ACTION_DATA_UPDATED = "com.invictus.psoriasis.ACTION_DATA_UPDATED";
+    public static final String ACTION_DATA_UPDATED = "com.invictus.carmaintenance.ACTION_DATA_UPDATED";
 
     @Override
     public void onReceive(Context context, Intent intent) {

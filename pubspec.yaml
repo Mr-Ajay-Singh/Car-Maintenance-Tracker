@@ -37,7 +37,7 @@ dependencies:
   provider: ^6.1.2
   go_router: ^14.0.0
   shared_preferences: ^2.0.0
-  local_authentication: ^2.1.7
+  local_auth: ^2.3.0
   connectivity_plus: ^5.0.2
   uuid: ^4.0.0
   url_launcher: ^6.2.3

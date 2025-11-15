@@ -197,12 +197,10 @@ class _VehicleDetailPageState extends State<VehicleDetailPage> {
                 _DetailRow(label: 'Make', value: _vehicle!.make),
                 _DetailRow(label: 'Model', value: _vehicle!.model),
                 _DetailRow(label: 'Year', value: _vehicle!.year.toString()),
-                if (_vehicle!.vin.isNotEmpty)
-                  _DetailRow(label: 'VIN', value: _vehicle!.vin),
-                if (_vehicle!.licensePlate.isNotEmpty)
-                  _DetailRow(label: 'License Plate', value: _vehicle!.licensePlate),
-                if (_vehicle!.color.isNotEmpty)
-                  _DetailRow(label: 'Color', value: _vehicle!.color),
+                if (_vehicle!.vin != null && _vehicle!.vin!.isNotEmpty)
+                  _DetailRow(label: 'VIN', value: _vehicle!.vin!),
+                if (_vehicle!.licensePlate != null && _vehicle!.licensePlate!.isNotEmpty)
+                  _DetailRow(label: 'License Plate', value: _vehicle!.licensePlate!),
                 _DetailRow(label: 'Fuel Type', value: _vehicle!.fuelType),
                 _DetailRow(
                   label: 'Odometer',

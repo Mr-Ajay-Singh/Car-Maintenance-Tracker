@@ -1,4 +1,4 @@
-package com.invictus.psoriasis;
+package com.invictus.carmaintenance;
 
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
@@ -20,7 +20,7 @@ public class WeeklyProteinWidget extends AppWidgetProvider {
     private static final String TAG = "WeeklyProteinWidget";
     private static final String PREFS_NAME = "FlutterSharedPreferences";
     private static final String[] DAYS = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
-    public static final String ACTION_DATA_UPDATED = "com.invictus.psoriasis.ACTION_DATA_UPDATED";
+    public static final String ACTION_DATA_UPDATED = "com.invictus.carmaintenance.ACTION_DATA_UPDATED";
     private static final int MIN_HEIGHT_DP = 5;
     private static final int MAX_HEIGHT_DP = 100;
 

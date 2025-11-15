@@ -164,7 +164,7 @@ class DataExportService {
         'volume': '${entry.volume.toStringAsFixed(2)} L',
         'cost': '\$${entry.cost.toStringAsFixed(2)}',
         'pricePerUnit': '\$${entry.pricePerUnit.toStringAsFixed(2)}/L',
-        'isFull': entry.isFull ? 'Full Tank' : 'Partial',
+        'isFull': entry.isFullTank ? 'Full Tank' : 'Partial',
         'station': entry.stationName ?? 'N/A',
       };
     }).toList();
@@ -194,7 +194,7 @@ class DataExportService {
       return {
         'title': reminder.title,
         'description': reminder.description ?? '',
-        'type': reminder.reminderType,
+        'type': reminder.type,
         'dueDate': reminder.dueDate != null
             ? DateFormat('yyyy-MM-dd').format(reminder.dueDate!)
             : 'N/A',

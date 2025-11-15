@@ -10,7 +10,7 @@
 
 **AI Image Generation Prompt:**
 
-Design a bottom navigation bar for a mobile Psoriasis Tracker app using Material 3 design with purple theme.
+Design a bottom navigation bar for a mobile carmaintenance Tracker app using Material 3 design with purple theme.
 
 **Exact Theme Colors**:
 - Primary: #6750A4 | Primary Container: #E8DEF8 (50% opacity) | On Primary: #FFFFFF
@@ -84,7 +84,7 @@ Design a bottom navigation bar for a mobile Psoriasis Tracker app using Material
 
 **AI Image Generation Prompt:**
 
-Create a confirmation dialog for delete/discard actions in a Psoriasis Tracker app using Material 3 design with purple theme.
+Create a confirmation dialog for delete/discard actions in a carmaintenance Tracker app using Material 3 design with purple theme.
 
 **Exact Theme Colors**:
 - Primary: #6750A4 | Error: #BA1A1A | On Primary: #FFFFFF
@@ -130,7 +130,7 @@ Create a confirmation dialog for delete/discard actions in a Psoriasis Tracker a
 
 **AI Image Generation Prompt:**
 
-Design an information dialog showing detailed info or help text in a Psoriasis Tracker app.
+Design an information dialog showing detailed info or help text in a carmaintenance Tracker app.
 
 **Exact Theme Colors**:
 - Primary: #6750A4 | Primary Container: #E8DEF8
@@ -174,7 +174,7 @@ Design an information dialog showing detailed info or help text in a Psoriasis T
 
 **AI Image Generation Prompt:**
 
-Create a date picker dialog for a Psoriasis Tracker app using Material 3 design with purple theme.
+Create a date picker dialog for a carmaintenance Tracker app using Material 3 design with purple theme.
 
 **Exact Theme Colors**:
 - Primary: #6750A4 | Primary Container: #E8DEF8
@@ -221,7 +221,7 @@ Create a date picker dialog for a Psoriasis Tracker app using Material 3 design 
 
 **AI Image Generation Prompt:**
 
-Design a time picker dialog for a Psoriasis Tracker app using Material 3 design.
+Design a time picker dialog for a carmaintenance Tracker app using Material 3 design.
 
 **Exact Theme Colors**:
 - Primary: #6750A4 | Primary Container: #E8DEF8
@@ -276,7 +276,7 @@ Design a time picker dialog for a Psoriasis Tracker app using Material 3 design.
 
 **AI Image Generation Prompt:**
 
-Create a severity rating slider component for a Psoriasis Tracker app.
+Create a severity rating slider component for a carmaintenance Tracker app.
 
 **Exact Theme Colors**:
 - Gradient: Green #4CAF50 → Amber #FFC107 → Red #F44336
@@ -322,7 +322,7 @@ Create a severity rating slider component for a Psoriasis Tracker app.
 
 **AI Image Generation Prompt:**
 
-Design multi-select chip components for filtering and selection in a Psoriasis Tracker app.
+Design multi-select chip components for filtering and selection in a carmaintenance Tracker app.
 
 **Exact Theme Colors**:
 - Primary: #6750A4 | Primary Container: #E8DEF8
@@ -372,7 +372,7 @@ Design multi-select chip components for filtering and selection in a Psoriasis T
 
 **AI Image Generation Prompt:**
 
-Create an empty state screen component for when no data exists in a Psoriasis Tracker app.
+Create an empty state screen component for when no data exists in a carmaintenance Tracker app.
 
 **Exact Theme Colors**:
 - Primary: #6750A4 | On Primary: #FFFFFF
@@ -451,4 +451,4 @@ Create an empty state screen component for when no data exists in a Psoriasis Tr
 ---
 
 *Common Components UI Documentation*
-*Part of Psoriasis Tracker App v1.0*
+*Part of carmaintenance Tracker App v1.0*

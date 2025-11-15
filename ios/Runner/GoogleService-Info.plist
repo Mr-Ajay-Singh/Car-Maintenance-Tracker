@@ -2,18 +2,22 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>CLIENT_ID</key>
+	<string>84988324660-g2eqlkok0bmhpgae6bhgijmagv2j931t.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.84988324660-g2eqlkok0bmhpgae6bhgijmagv2j931t</string>
 	<key>API_KEY</key>
-	<string>AIzaSyCRh3A8U3IEZpJwaRB0MOb1p36lkyHneSk</string>
+	<string>AIzaSyBDQRoFFUwqBbN0Oo8SOmAdPcBCNwlzXgc</string>
 	<key>GCM_SENDER_ID</key>
-	<string>478602367185</string>
+	<string>84988324660</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.invictus.psoriasis</string>
+	<string>com.invictus.carmaintenance</string>
 	<key>PROJECT_ID</key>
-	<string>psoriasis-tracker-7873e</string>
+	<string>car-maintenance-f5abf</string>
 	<key>STORAGE_BUCKET</key>
-	<string>psoriasis-tracker-7873e.firebasestorage.app</string>
+	<string>car-maintenance-f5abf.firebasestorage.app</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -25,6 +29,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:478602367185:ios:5921438d9f727afbaaf5f0</string>
+	<string>1:84988324660:ios:900f0e1365f48349211361</string>
 </dict>
 </plist>

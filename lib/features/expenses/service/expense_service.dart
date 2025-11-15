@@ -114,7 +114,7 @@ class ExpenseService {
     return results.first['total'] as double;
   }
 
-  Future<Map<String, double>> getExpensesByCategory(
+  Future<Map<String, double>> getExpenseTotalsByCategory(
     String vehicleId,
     DateTime startDate,
     DateTime endDate,

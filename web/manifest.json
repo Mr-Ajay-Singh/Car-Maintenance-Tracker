@@ -1,11 +1,11 @@
 {
-    "name": "Psoriasis Tracker",
-    "short_name": "Psoriasis",
+    "name": "carmaintenance Tracker",
+    "short_name": "carmaintenance",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "Psoriasis Tracker - Track symptoms, triggers, treatments, and progress.",
+    "description": "carmaintenance Tracker - Track symptoms, triggers, treatments, and progress.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

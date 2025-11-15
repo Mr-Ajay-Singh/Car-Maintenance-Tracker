@@ -1,4 +1,4 @@
-package com.invictus.psoriasis;
+package com.invictus.carmaintenance;
 
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
@@ -9,7 +9,7 @@ import io.flutter.plugin.common.MethodChannel;
 
 public class MainActivity extends FlutterActivity {
     private void setupWidgetMethodChannel(FlutterEngine flutterEngine) {
-        new MethodChannel(flutterEngine.getDartExecutor().getBinaryMessenger(), "com.invictus.psoriasis/widget")
+        new MethodChannel(flutterEngine.getDartExecutor().getBinaryMessenger(), "com.invictus.carmaintenance/widget")
                 .setMethodCallHandler((call, result) -> {
                     switch (call.method) {
                         case "isWidgetSupported":

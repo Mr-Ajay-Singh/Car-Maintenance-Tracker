@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:local_authentication/local_authentication.dart';
+import 'package:local_auth/local_auth.dart';
 import '../../../common/data/database_helper.dart';
 import '../../../common/data/firestore_helper.dart';
 import '../../../common/data/shared_preferences_helper.dart';

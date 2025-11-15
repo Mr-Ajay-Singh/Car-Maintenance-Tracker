@@ -8,7 +8,7 @@
 
 **AI Image Generation Prompt:**
 
-Create a welcoming onboarding screen for a Psoriasis Tracker application using Material 3 design.
+Create a welcoming onboarding screen for a carmaintenance Tracker application using Material 3 design.
 
 **Exact Theme Colors** (from ColorScheme.fromSeed with seed #6750A4):
 - Primary: #6750A4 | Primary Container: #E8DEF8 | On Primary: #FFFFFF
@@ -21,12 +21,12 @@ Create a welcoming onboarding screen for a Psoriasis Tracker application using M
 - App branding (top):
   - App logo/icon (120px diameter)
   - Circular background in #E8DEF8
-  - Psoriasis awareness ribbon or medical icon in #6750A4
+  - carmaintenance awareness ribbon or medical icon in #6750A4
   - 48px margin top
   - Centered
 
 - Headline section:
-  - App name "Psoriasis Tracker" (32px, bold, PT Serif) in #1D1B20
+  - App name "carmaintenance Tracker" (32px, bold, PT Serif) in #1D1B20
   - Tagline "Take control of your health journey" (16px) in #49454F
   - Centered, 24px margin below logo
 
@@ -84,7 +84,7 @@ Create a welcoming onboarding screen for a Psoriasis Tracker application using M
 
 **AI Image Generation Prompt:**
 
-Design a user registration screen for a Psoriasis Tracker app using Material 3 design with purple theme.
+Design a user registration screen for a carmaintenance Tracker app using Material 3 design with purple theme.
 
 **Exact Theme Colors**:
 - Primary: #6750A4 | Primary Container: #E8DEF8 | On Primary: #FFFFFF
@@ -200,7 +200,7 @@ Design a user registration screen for a Psoriasis Tracker app using Material 3 d
 
 **AI Image Generation Prompt:**
 
-Create a user login screen for a Psoriasis Tracker app using Material 3 design with purple theme.
+Create a user login screen for a carmaintenance Tracker app using Material 3 design with purple theme.
 
 **Exact Theme Colors**:
 - Primary: #6750A4 | Primary Container: #E8DEF8 | On Primary: #FFFFFF
@@ -303,7 +303,7 @@ Create a user login screen for a Psoriasis Tracker app using Material 3 design w
 
 **AI Image Generation Prompt:**
 
-Design a password recovery screen for a Psoriasis Tracker app using Material 3 design.
+Design a password recovery screen for a carmaintenance Tracker app using Material 3 design.
 
 **Exact Theme Colors**:
 - Primary: #6750A4 | Primary Container: #E8DEF8 | On Primary: #FFFFFF
@@ -370,7 +370,7 @@ Design a password recovery screen for a Psoriasis Tracker app using Material 3 d
 
 **AI Image Generation Prompt:**
 
-Create an email verification screen for a Psoriasis Tracker app using Material 3 design.
+Create an email verification screen for a carmaintenance Tracker app using Material 3 design.
 
 **Exact Theme Colors**:
 - Primary: #6750A4 | Primary Container: #E8DEF8 | On Primary: #FFFFFF
@@ -455,7 +455,7 @@ Create an email verification screen for a Psoriasis Tracker app using Material 3
 
 **AI Image Generation Prompt:**
 
-Design a multi-step account setup wizard for a Psoriasis Tracker app using Material 3 design.
+Design a multi-step account setup wizard for a carmaintenance Tracker app using Material 3 design.
 
 **Exact Theme Colors**:
 - Primary: #6750A4 | Primary Container: #E8DEF8 | On Primary: #FFFFFF
@@ -503,10 +503,10 @@ Design a multi-step account setup wizard for a Psoriasis Tracker app using Mater
 - Subtitle "Help us personalize your experience"
 
 - Questions:
-  1. "When were you diagnosed with psoriasis?"
+  1. "When were you diagnosed with carmaintenance?"
      - Date picker
 
-  2. "What type of psoriasis do you have?"
+  2. "What type of carmaintenance do you have?"
      - Dropdown with types
      - Info icon for each type
 
@@ -595,7 +595,7 @@ Design a multi-step account setup wizard for a Psoriasis Tracker app using Mater
 
 **AI Image Generation Prompt:**
 
-Create a biometric authentication setup screen for a Psoriasis Tracker app using Material 3 design.
+Create a biometric authentication setup screen for a carmaintenance Tracker app using Material 3 design.
 
 **Exact Theme Colors**:
 - Primary: #6750A4 | Primary Container: #E8DEF8 | On Primary: #FFFFFF
@@ -665,4 +665,4 @@ Create a biometric authentication setup screen for a Psoriasis Tracker app using
 ---
 
 *Feature UI Documentation - Authentication*
-*Part of Psoriasis Tracker App v1.0*
+*Part of carmaintenance Tracker App v1.0*

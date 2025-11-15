@@ -1,26 +1,36 @@
 {
   "project_info": {
-    "project_number": "478602367185",
-    "project_id": "psoriasis-tracker-7873e",
-    "storage_bucket": "psoriasis-tracker-7873e.firebasestorage.app"
+    "project_number": "84988324660",
+    "project_id": "car-maintenance-f5abf",
+    "storage_bucket": "car-maintenance-f5abf.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:478602367185:android:9a0e7c2d582547cfaaf5f0",
+        "mobilesdk_app_id": "1:84988324660:android:d5ecda3f376eb7d1211361",
         "android_client_info": {
-          "package_name": "com.invictus.psoriasis"
+          "package_name": "com.invictus.carmaintenance"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "84988324660-chp2ggic743c6qn2iruen0tv6sr9iia2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
-          "current_key": "AIzaSyChyp_yht3ZlTsq96MKEK37IWphOYLtN4Y"
+          "current_key": "AIzaSyC-QaiEQuiyYPFVgXxtyiZc6V-Ytov_C-U"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "84988324660-chp2ggic743c6qn2iruen0tv6sr9iia2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }
