@@ -1,5 +1,5 @@
-name: psoriasis_tracker
-description: "Psoriasis Tracker - Track symptoms, triggers, treatments, and progress."
+name: car_maintenance_tracker
+description: "Car Maintenance Tracker - Track vehicle maintenance, fuel, expenses, and service history."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -35,6 +35,7 @@ dependencies:
   cupertino_icons: ^1.0.8
   intl: ^0.20.2
   provider: ^6.1.2
+  go_router: ^14.0.0
   shared_preferences: ^2.0.0
   url_launcher: ^6.2.3
   in_app_purchase: ^3.1.11
