@@ -5,6 +5,7 @@ import '../../auth/service/auth_provider.dart';
 import '../data/models/vehicle_model.dart';
 import '../service/vehicle_service.dart';
 
+import '../../../common/utils/format_helper.dart';
 /// VehicleListPage - List of all user vehicles
 class VehicleListPage extends StatefulWidget {
   const VehicleListPage({super.key});

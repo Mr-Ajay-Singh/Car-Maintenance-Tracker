@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../auth/service/auth_provider.dart';
 import '../data/models/fuel_entry_model.dart';
 import '../service/fuel_entry_service.dart';
+import '../../../common/utils/format_helper.dart';
 
 class FuelListPage extends StatefulWidget {
   const FuelListPage({super.key});
@@ -39,6 +40,16 @@ class _FuelListPageState extends State<FuelListPage> {
     }
   }
 
+  Future<Map<String, String>> _getFormattedData(FuelEntryModel entry) async {
+    final pricePerLiter = entry.cost / entry.volume;
+    return {
+      'volume': await FormatHelper.formatVolume(entry.volume),
+      'cost': await FormatHelper.formatCurrency(entry.cost),
+      'pricePerUnit': await FormatHelper.formatPricePerUnit(pricePerLiter),
+      'odometer': await FormatHelper.formatDistance(entry.odometer),
+    };
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -68,9 +79,17 @@ class _FuelListPageState extends State<FuelListPage> {
                     itemCount: _entries.length,
                     itemBuilder: (context, index) {
                       final entry = _entries[index];
-                      final pricePerLiter = entry.cost / entry.volume;
 
-                      return Card(
+                      return FutureBuilder<Map<String, String>>(
+                        future: _getFormattedData(entry),
+                        builder: (context, snapshot) {
+                          final data = snapshot.data ?? {};
+                          final volume = data['volume'] ?? '${entry.volume.toStringAsFixed(2)} L';
+                          final cost = data['cost'] ?? '\$${entry.cost.toStringAsFixed(2)}';
+                          final pricePerUnit = data['pricePerUnit'] ?? '\$${(entry.cost / entry.volume).toStringAsFixed(2)}/L';
+                          final odometer = data['odometer'] ?? '${entry.odometer} km';
+
+                          return Card(
                         margin: const EdgeInsets.only(bottom: 16),
                         elevation: 3,
                         shape: RoundedRectangleBorder(
@@ -106,7 +125,7 @@ class _FuelListPageState extends State<FuelListPage> {
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
                                           Text(
-                                            '${entry.volume.toStringAsFixed(2)} L',
+                                            volume,
                                             style: Theme.of(context).textTheme.titleLarge?.copyWith(
                                                   fontWeight: FontWeight.bold,
                                                 ),
@@ -121,7 +140,7 @@ class _FuelListPageState extends State<FuelListPage> {
                                               ),
                                               const SizedBox(width: 4),
                                               Text(
-                                                '${entry.date.day}/${entry.date.month}/${entry.date.year}',
+                                                FormatHelper.formatDate(entry.date),
                                                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                                       color: Theme.of(context).colorScheme.onSurfaceVariant,
                                                     ),
@@ -135,7 +154,7 @@ class _FuelListPageState extends State<FuelListPage> {
                                       crossAxisAlignment: CrossAxisAlignment.end,
                                       children: [
                                         Text(
-                                          '\$${entry.cost.toStringAsFixed(2)}',
+                                          cost,
                                           style: Theme.of(context).textTheme.titleLarge?.copyWith(
                                                 color: Theme.of(context).colorScheme.primary,
                                                 fontWeight: FontWeight.bold,
@@ -143,7 +162,7 @@ class _FuelListPageState extends State<FuelListPage> {
                                         ),
                                         const SizedBox(height: 4),
                                         Text(
-                                          '\$${pricePerLiter.toStringAsFixed(2)}/L',
+                                          pricePerUnit,
                                           style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                                 color: Theme.of(context).colorScheme.onSurfaceVariant,
                                               ),
@@ -168,7 +187,7 @@ class _FuelListPageState extends State<FuelListPage> {
                                       ),
                                       const SizedBox(width: 8),
                                       Text(
-                                        'Odometer: ${entry.odometer.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} km',
+                                        'Odometer: $odometer',
                                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                               fontWeight: FontWeight.w500,
                                             ),
@@ -197,6 +216,8 @@ class _FuelListPageState extends State<FuelListPage> {
                             ),
                           ),
                         ),
+                      );
+                        },
                       );
                     },
                   ),
