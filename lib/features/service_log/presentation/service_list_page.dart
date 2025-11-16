@@ -41,6 +41,13 @@ class _ServiceListPageState extends State<ServiceListPage> {
     }
   }
 
+  Future<Map<String, String>> _getFormattedData(ServiceEntryModel entry) async {
+    return {
+      'cost': await FormatHelper.formatCurrency(entry.totalCost),
+      'odometer': await FormatHelper.formatDistance(entry.odometer),
+    };
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -56,7 +63,14 @@ class _ServiceListPageState extends State<ServiceListPage> {
                     itemBuilder: (context, index) {
                       final entry = _entries[index];
 
-                      return Card(
+                      return FutureBuilder<Map<String, String>>(
+                        future: _getFormattedData(entry),
+                        builder: (context, snapshot) {
+                          final data = snapshot.data ?? {};
+                          final cost = data['cost'] ?? '\$${entry.totalCost.toStringAsFixed(2)}';
+                          final odometer = data['odometer'] ?? '${entry.odometer} km';
+
+                          return Card(
                         margin: const EdgeInsets.only(bottom: 16),
                         elevation: 3,
                         shape: RoundedRectangleBorder(
@@ -105,7 +119,7 @@ class _ServiceListPageState extends State<ServiceListPage> {
                                               ),
                                               const SizedBox(width: 4),
                                               Text(
-                                                '${entry.date.day}/${entry.date.month}/${entry.date.year}',
+                                                FormatHelper.formatDate(entry.date),
                                                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                                       color: Theme.of(context).colorScheme.onSurfaceVariant,
                                                     ),
@@ -116,7 +130,7 @@ class _ServiceListPageState extends State<ServiceListPage> {
                                       ),
                                     ),
                                     Text(
-                                      '\$${entry.totalCost.toStringAsFixed(2)}',
+                                      cost,
                                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
                                             color: Theme.of(context).colorScheme.primary,
                                             fontWeight: FontWeight.bold,
@@ -140,7 +154,7 @@ class _ServiceListPageState extends State<ServiceListPage> {
                                       ),
                                       const SizedBox(width: 8),
                                       Text(
-                                        'Odometer: ${entry.odometer.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} km',
+                                        'Odometer: $odometer',
                                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                               fontWeight: FontWeight.w500,
                                             ),
@@ -177,6 +191,8 @@ class _ServiceListPageState extends State<ServiceListPage> {
                             ),
                           ),
                         ),
+                      );
+                        },
                       );
                     },
                   ),

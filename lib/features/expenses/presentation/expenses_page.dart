@@ -88,6 +88,10 @@ class _ExpensesPageState extends State<ExpensesPage> {
     }
   }
 
+  Future<String> _getFormattedAmount(double amount) async {
+    return await FormatHelper.formatCurrency(amount);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -120,7 +124,12 @@ class _ExpensesPageState extends State<ExpensesPage> {
                       final categoryColor = _getCategoryColor(context, expense.category);
                       final categoryIcon = _getCategoryIcon(expense.category);
 
-                      return Card(
+                      return FutureBuilder<String>(
+                        future: _getFormattedAmount(expense.amount),
+                        builder: (context, snapshot) {
+                          final amount = snapshot.data ?? '\$${expense.amount.toStringAsFixed(2)}';
+
+                          return Card(
                         margin: const EdgeInsets.only(bottom: 16),
                         elevation: 3,
                         shape: RoundedRectangleBorder(
@@ -168,7 +177,7 @@ class _ExpensesPageState extends State<ExpensesPage> {
                                           ),
                                           const SizedBox(width: 4),
                                           Text(
-                                            '${expense.date.day}/${expense.date.month}/${expense.date.year}',
+                                            FormatHelper.formatDate(expense.date),
                                             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                                   color: Theme.of(context).colorScheme.onSurfaceVariant,
                                                 ),
@@ -192,7 +201,7 @@ class _ExpensesPageState extends State<ExpensesPage> {
                                   crossAxisAlignment: CrossAxisAlignment.end,
                                   children: [
                                     Text(
-                                      '\$${expense.amount.toStringAsFixed(2)}',
+                                      amount,
                                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
                                             color: Theme.of(context).colorScheme.primary,
                                             fontWeight: FontWeight.bold,
@@ -233,6 +242,8 @@ class _ExpensesPageState extends State<ExpensesPage> {
                             ),
                           ),
                         ),
+                      );
+                        },
                       );
                     },
                   ),

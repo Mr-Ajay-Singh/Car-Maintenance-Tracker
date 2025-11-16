@@ -55,6 +55,10 @@ class _VehicleListPageState extends State<VehicleListPage> {
     }
   }
 
+  Future<String> _getFormattedOdometer(int odometer) async {
+    return await FormatHelper.formatDistance(odometer);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -137,7 +141,12 @@ class _VehicleListPageState extends State<VehicleListPage> {
         itemCount: _vehicles.length,
         itemBuilder: (context, index) {
           final vehicle = _vehicles[index];
-          return Card(
+          return FutureBuilder<String>(
+            future: _getFormattedOdometer(vehicle.currentOdometer),
+            builder: (context, snapshot) {
+              final odometer = snapshot.data ?? '${vehicle.currentOdometer} km';
+
+              return Card(
             margin: const EdgeInsets.only(bottom: 16),
             elevation: 3,
             shape: RoundedRectangleBorder(
@@ -183,7 +192,7 @@ class _VehicleListPageState extends State<VehicleListPage> {
                               ),
                               const SizedBox(width: 6),
                               Text(
-                                '${vehicle.currentOdometer.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} km',
+                                odometer,
                                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                       fontWeight: FontWeight.w500,
                                     ),
@@ -239,6 +248,8 @@ class _VehicleListPageState extends State<VehicleListPage> {
                 ),
               ),
             ),
+          );
+            },
           );
         },
       ),
