@@ -159,13 +159,13 @@ class _ServiceListPageState extends State<ServiceListPage> {
                                               fontWeight: FontWeight.w500,
                                             ),
                                       ),
-                                      if (entry.serviceProvider != null && entry.serviceProvider!.isNotEmpty) ...[
+                                      if (entry.shopName != null && entry.shopName!.isNotEmpty) ...[
                                         const SizedBox(width: 16),
                                         const Text('•'),
                                         const SizedBox(width: 8),
-                                        Expanded(
+                                        Flexible(
                                           child: Text(
-                                            entry.serviceProvider!,
+                                            entry.shopName!,
                                             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                                   fontWeight: FontWeight.w500,
                                                 ),
