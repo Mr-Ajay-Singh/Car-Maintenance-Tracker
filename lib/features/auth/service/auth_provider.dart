@@ -25,21 +25,25 @@ class AuthProvider extends ChangeNotifier {
 
     try {
       // Try to auto sign in using stored credentials
-      final user = await _authService.autoSignIn();
+      final userId = await _authService.autoSignIn();
 
-      if (user != null) {
-        _currentUser = UserModel(
-          id: user.uid,
-          email: user.email ?? '',
-          displayName: user.displayName,
-          createdAt: user.metadata.creationTime ?? DateTime.now(),
-          lastLoginAt: DateTime.now(),
-        );
+      if (userId != null) {
+        final user = _authService.getCurrentUser();
+        if (user != null) {
+          _currentUser = UserModel(
+            id: user.uid,
+            email: user.email ?? '',
+            displayName: user.displayName,
+            createdAt: user.metadata.creationTime ?? DateTime.now(),
+            lastLoginAt: DateTime.now(),
+          );
 
-        // Trigger background sync after successful auto-login
-        _syncService.syncAll().catchError((e) {
-          print('Background sync failed: $e');
-        });
+          // Trigger background sync after successful auto-login
+          _syncService.syncAll().catchError((e) {
+            print('Background sync failed: $e');
+            return false;
+          });
+        }
       }
     } catch (e) {
       _errorMessage = e.toString();
@@ -57,25 +61,29 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final user = await _authService.signInWithEmail(email, password);
+      final userId = await _authService.signInWithEmail(email, password);
 
-      if (user != null) {
-        _currentUser = UserModel(
-          id: user.uid,
-          email: user.email ?? email,
-          displayName: user.displayName,
-          createdAt: user.metadata.creationTime ?? DateTime.now(),
-          lastLoginAt: DateTime.now(),
-        );
-        _isLoading = false;
-        notifyListeners();
+      if (userId != null) {
+        final user = _authService.getCurrentUser();
+        if (user != null) {
+          _currentUser = UserModel(
+            id: user.uid,
+            email: user.email ?? email,
+            displayName: user.displayName,
+            createdAt: user.metadata.creationTime ?? DateTime.now(),
+            lastLoginAt: DateTime.now(),
+          );
+          _isLoading = false;
+          notifyListeners();
 
-        // Trigger background sync after successful login
-        _syncService.syncAll().catchError((e) {
-          print('Background sync failed: $e');
-        });
+          // Trigger background sync after successful login
+          _syncService.syncAll().catchError((e) {
+            print('Background sync failed: $e');
+            return false;
+          });
 
-        return true;
+          return true;
+        }
       }
 
       _isLoading = false;
@@ -96,25 +104,29 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final user = await _authService.signUpWithEmail(email, password);
+      final userId = await _authService.signUpWithEmail(email, password);
 
-      if (user != null) {
-        _currentUser = UserModel(
-          id: user.uid,
-          email: user.email ?? email,
-          displayName: user.displayName,
-          createdAt: user.metadata.creationTime ?? DateTime.now(),
-          lastLoginAt: DateTime.now(),
-        );
-        _isLoading = false;
-        notifyListeners();
+      if (userId != null) {
+        final user = _authService.getCurrentUser();
+        if (user != null) {
+          _currentUser = UserModel(
+            id: user.uid,
+            email: user.email ?? email,
+            displayName: user.displayName,
+            createdAt: user.metadata.creationTime ?? DateTime.now(),
+            lastLoginAt: DateTime.now(),
+          );
+          _isLoading = false;
+          notifyListeners();
 
-        // Trigger background sync after successful signup
-        _syncService.syncAll().catchError((e) {
-          print('Background sync failed: $e');
-        });
+          // Trigger background sync after successful signup
+          _syncService.syncAll().catchError((e) {
+            print('Background sync failed: $e');
+            return false;
+          });
 
-        return true;
+          return true;
+        }
       }
 
       _isLoading = false;
