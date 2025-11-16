@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../../features/auth/presentation/forgot_password_page.dart';
+import '../../features/auth/presentation/login_page.dart';
+import '../../features/auth/presentation/signup_page.dart';
+import '../../features/auth/service/auth_provider.dart';
 import '../../features/dashboard/presentation/dashboard_page.dart';
+import '../../features/data_export/pages/data_export_page.dart';
 import '../../features/expenses/presentation/add_expense_page.dart';
 import '../../features/expenses/presentation/expense_stats_page.dart';
 import '../../features/expenses/presentation/expenses_page.dart';
@@ -24,9 +29,45 @@ import '../widgets/main_scaffold.dart';
 
 /// AppRouter - Centralized routing configuration using go_router
 class AppRouter {
-  static final GoRouter router = GoRouter(
-    initialLocation: '/',
-    routes: [
+  static GoRouter createRouter(AuthProvider authProvider) {
+    return GoRouter(
+      initialLocation: '/',
+      refreshListenable: authProvider,
+      redirect: (context, state) {
+        final isAuthenticated = authProvider.isAuthenticated;
+        final isAuthRoute = state.matchedLocation.startsWith('/login') ||
+            state.matchedLocation.startsWith('/signup') ||
+            state.matchedLocation.startsWith('/forgot-password');
+
+        // If not authenticated and trying to access protected route, redirect to login
+        if (!isAuthenticated && !isAuthRoute) {
+          return '/login';
+        }
+
+        // If authenticated and trying to access auth route, redirect to dashboard
+        if (isAuthenticated && isAuthRoute) {
+          return '/';
+        }
+
+        return null; // No redirect
+      },
+      routes: [
+        // Authentication routes (outside ShellRoute, no bottom nav)
+        GoRoute(
+          path: '/login',
+          name: 'login',
+          builder: (context, state) => const LoginPage(),
+        ),
+        GoRoute(
+          path: '/signup',
+          name: 'signup',
+          builder: (context, state) => const SignUpPage(),
+        ),
+        GoRoute(
+          path: '/forgot-password',
+          name: 'forgot-password',
+          builder: (context, state) => const ForgotPasswordPage(),
+        ),
       // Main scaffold with bottom navigation
       ShellRoute(
         builder: (context, state, child) {
@@ -133,6 +174,11 @@ class AppRouter {
                 name: 'about',
                 builder: (context, state) => const AboutPage(),
               ),
+              GoRoute(
+                path: 'export',
+                name: 'export',
+                builder: (context, state) => const DataExportPage(),
+              ),
             ],
           ),
         ],
@@ -187,6 +233,7 @@ class AppRouter {
           ),
         ],
       ),
-    ],
-  );
+      ],
+    );
+  }
 }
