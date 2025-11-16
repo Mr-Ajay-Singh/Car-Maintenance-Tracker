@@ -12,6 +12,54 @@ class ExpensesPage extends StatefulWidget {
   State<ExpensesPage> createState() => _ExpensesPageState();
 }
 
+// Helper function to get category-specific icon
+IconData _getCategoryIcon(String category) {
+  switch (category) {
+    case 'Insurance':
+      return Icons.shield;
+    case 'Registration':
+      return Icons.description;
+    case 'Parking':
+      return Icons.local_parking;
+    case 'Fine/Ticket':
+      return Icons.warning;
+    case 'Parts':
+      return Icons.build_circle;
+    case 'Tolls':
+      return Icons.toll;
+    case 'Cleaning/Detailing':
+      return Icons.local_car_wash;
+    case 'Storage':
+      return Icons.garage;
+    default:
+      return Icons.receipt;
+  }
+}
+
+// Helper function to get category color
+Color _getCategoryColor(BuildContext context, String category) {
+  switch (category) {
+    case 'Insurance':
+      return Theme.of(context).colorScheme.primary;
+    case 'Registration':
+      return Theme.of(context).colorScheme.secondary;
+    case 'Parking':
+      return Theme.of(context).colorScheme.tertiary;
+    case 'Fine/Ticket':
+      return Theme.of(context).colorScheme.error;
+    case 'Parts':
+      return Theme.of(context).colorScheme.primaryContainer;
+    case 'Tolls':
+      return Theme.of(context).colorScheme.secondaryContainer;
+    case 'Cleaning/Detailing':
+      return Theme.of(context).colorScheme.tertiaryContainer;
+    case 'Storage':
+      return Theme.of(context).colorScheme.surfaceVariant;
+    default:
+      return Theme.of(context).colorScheme.surfaceVariant;
+  }
+}
+
 class _ExpensesPageState extends State<ExpensesPage> {
   final _service = ExpenseService();
   List<ExpenseModel> _expenses = [];
@@ -68,26 +116,121 @@ class _ExpensesPageState extends State<ExpensesPage> {
                     itemCount: _expenses.length,
                     itemBuilder: (context, index) {
                       final expense = _expenses[index];
+                      final categoryColor = _getCategoryColor(context, expense.category);
+                      final categoryIcon = _getCategoryIcon(expense.category);
+
                       return Card(
-                        margin: const EdgeInsets.only(bottom: 12),
-                        child: ListTile(
-                          leading: CircleAvatar(
-                            backgroundColor:
-                                Theme.of(context).colorScheme.tertiaryContainer,
-                            child: Icon(Icons.receipt,
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .onTertiaryContainer),
+                        margin: const EdgeInsets.only(bottom: 16),
+                        elevation: 3,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(16),
+                          onTap: () {
+                            // Future: Navigate to expense detail
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: Row(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(12),
+                                  decoration: BoxDecoration(
+                                    color: categoryColor.withOpacity(0.2),
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: Icon(
+                                    categoryIcon,
+                                    color: categoryColor,
+                                    size: 28,
+                                  ),
+                                ),
+                                const SizedBox(width: 16),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        expense.category,
+                                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Row(
+                                        children: [
+                                          Icon(
+                                            Icons.calendar_today,
+                                            size: 14,
+                                            color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                          ),
+                                          const SizedBox(width: 4),
+                                          Text(
+                                            '${expense.date.day}/${expense.date.month}/${expense.date.year}',
+                                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                                ),
+                                          ),
+                                        ],
+                                      ),
+                                      if (expense.description != null && expense.description!.isNotEmpty) ...[
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          expense.description!,
+                                          style: Theme.of(context).textTheme.bodySmall,
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ],
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    Text(
+                                      '\$${expense.amount.toStringAsFixed(2)}',
+                                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                            color: Theme.of(context).colorScheme.primary,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                    ),
+                                    if (expense.isRecurring) ...[
+                                      const SizedBox(height: 4),
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                        decoration: BoxDecoration(
+                                          color: Theme.of(context).colorScheme.secondaryContainer,
+                                          borderRadius: BorderRadius.circular(4),
+                                        ),
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Icon(
+                                              Icons.repeat,
+                                              size: 12,
+                                              color: Theme.of(context).colorScheme.onSecondaryContainer,
+                                            ),
+                                            const SizedBox(width: 2),
+                                            Text(
+                                              expense.recurringPeriod ?? 'Recurring',
+                                              style: TextStyle(
+                                                fontSize: 10,
+                                                fontWeight: FontWeight.bold,
+                                                color: Theme.of(context).colorScheme.onSecondaryContainer,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ],
+                                ),
+                              ],
+                            ),
                           ),
-                          title: Text(expense.category,
-                              style:
-                                  const TextStyle(fontWeight: FontWeight.bold)),
-                          subtitle: Text(
-                              '${expense.date.day}/${expense.date.month}/${expense.date.year}'),
-                          trailing: Text('\$${expense.amount.toStringAsFixed(2)}',
-                              style: TextStyle(
-                                  color: Theme.of(context).colorScheme.primary,
-                                  fontWeight: FontWeight.bold)),
                         ),
                       );
                     },
