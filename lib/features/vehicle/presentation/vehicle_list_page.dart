@@ -5,6 +5,7 @@ import '../../auth/service/auth_provider.dart';
 import '../data/models/vehicle_model.dart';
 import '../service/vehicle_service.dart';
 
+import '../../../common/utils/format_helper.dart';
 /// VehicleListPage - List of all user vehicles
 class VehicleListPage extends StatefulWidget {
   const VehicleListPage({super.key});
@@ -52,6 +53,10 @@ class _VehicleListPageState extends State<VehicleListPage> {
         _isLoading = false;
       });
     }
+  }
+
+  Future<String> _getFormattedOdometer(int odometer) async {
+    return await FormatHelper.formatDistance(odometer);
   }
 
   @override
@@ -136,36 +141,115 @@ class _VehicleListPageState extends State<VehicleListPage> {
         itemCount: _vehicles.length,
         itemBuilder: (context, index) {
           final vehicle = _vehicles[index];
-          return Card(
-            margin: const EdgeInsets.only(bottom: 12),
-            child: ListTile(
-              contentPadding: const EdgeInsets.all(16),
-              leading: CircleAvatar(
-                backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-                child: Icon(
-                  Icons.directions_car,
-                  color: Theme.of(context).colorScheme.onPrimaryContainer,
+          return FutureBuilder<String>(
+            future: _getFormattedOdometer(vehicle.currentOdometer),
+            builder: (context, snapshot) {
+              final odometer = snapshot.data ?? '${vehicle.currentOdometer} km';
+
+              return Card(
+            margin: const EdgeInsets.only(bottom: 16),
+            elevation: 3,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: InkWell(
+              borderRadius: BorderRadius.circular(16),
+              onTap: () => context.go('/vehicles/${vehicle.id}'),
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.primaryContainer,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Icon(
+                        Icons.directions_car,
+                        color: Theme.of(context).colorScheme.onPrimaryContainer,
+                        size: 32,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '${vehicle.year} ${vehicle.make} ${vehicle.model}',
+                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                          ),
+                          const SizedBox(height: 8),
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.speed,
+                                size: 16,
+                                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                              ),
+                              const SizedBox(width: 6),
+                              Text(
+                                odometer,
+                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                              ),
+                            ],
+                          ),
+                          if (vehicle.licensePlate != null && vehicle.licensePlate!.isNotEmpty) ...[
+                            const SizedBox(height: 4),
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.confirmation_number,
+                                  size: 16,
+                                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                ),
+                                const SizedBox(width: 6),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                  decoration: BoxDecoration(
+                                    color: Theme.of(context).colorScheme.secondaryContainer,
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                  child: Text(
+                                    vehicle.licensePlate!,
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold,
+                                      color: Theme.of(context).colorScheme.onSecondaryContainer,
+                                      letterSpacing: 1,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                          if (vehicle.vin != null && vehicle.vin!.isNotEmpty) ...[
+                            const SizedBox(height: 4),
+                            Text(
+                              'VIN: ${vehicle.vin}',
+                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                  ),
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                    Icon(
+                      Icons.chevron_right,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+                  ],
                 ),
               ),
-              title: Text(
-                '${vehicle.year} ${vehicle.make} ${vehicle.model}',
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              ),
-              subtitle: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 4),
-                  Text('${vehicle.currentOdometer} km'),
-                  if (vehicle.licensePlate != null && vehicle.licensePlate!.isNotEmpty)
-                    Text('License: ${vehicle.licensePlate}'),
-                ],
-              ),
-              trailing: Icon(
-                Icons.chevron_right,
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-              ),
-              onTap: () => context.go('/vehicles/${vehicle.id}'),
             ),
+          );
+            },
           );
         },
       ),

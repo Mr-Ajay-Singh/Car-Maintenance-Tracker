@@ -13,6 +13,9 @@ class SharedPreferencesHelper {
   static const String _keyLastSyncTimestamp = 'lastSyncTimestamp';
   static const String _keyFirstSyncCompleted = 'firstSyncCompleted';
   static const String _keyIsLoggedIn = 'isLoggedIn';
+  static const String _keyCurrency = 'currency';
+  static const String _keyVolumeUnit = 'volumeUnit';
+  static const String _keyDistanceUnit = 'distanceUnit';
 
   // ==================== USER ID ====================
 
@@ -102,6 +105,44 @@ class SharedPreferencesHelper {
     return await prefs.setBool(_keyIsLoggedIn, isLoggedIn);
   }
 
+  // ==================== USER PREFERENCES ====================
+
+  /// Get currency preference (default: USD)
+  static Future<String> getCurrency() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_keyCurrency) ?? 'USD';
+  }
+
+  /// Set currency preference
+  static Future<bool> setCurrency(String currency) async {
+    final prefs = await SharedPreferences.getInstance();
+    return await prefs.setString(_keyCurrency, currency);
+  }
+
+  /// Get volume unit preference (default: L for Liters)
+  static Future<String> getVolumeUnit() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_keyVolumeUnit) ?? 'L';
+  }
+
+  /// Set volume unit preference
+  static Future<bool> setVolumeUnit(String unit) async {
+    final prefs = await SharedPreferences.getInstance();
+    return await prefs.setString(_keyVolumeUnit, unit);
+  }
+
+  /// Get distance unit preference (default: km)
+  static Future<String> getDistanceUnit() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_keyDistanceUnit) ?? 'km';
+  }
+
+  /// Set distance unit preference
+  static Future<bool> setDistanceUnit(String unit) async {
+    final prefs = await SharedPreferences.getInstance();
+    return await prefs.setString(_keyDistanceUnit, unit);
+  }
+
   // ==================== CLEAR ALL ====================
 
   /// Clear all user data (on logout)
@@ -113,6 +154,7 @@ class SharedPreferencesHelper {
     await prefs.remove(_keyLastSyncTimestamp);
     await prefs.remove(_keyFirstSyncCompleted);
     await prefs.remove(_keyIsLoggedIn);
+    // Note: We keep user preferences (currency, volume unit, etc.) even after logout
   }
 
   // ==================== UTILITY METHODS ====================

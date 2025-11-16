@@ -63,31 +63,145 @@ class _RemindersPageState extends State<RemindersPage> {
                     itemCount: _reminders.length,
                     itemBuilder: (context, index) {
                       final reminder = _reminders[index];
+
                       return Card(
-                        margin: const EdgeInsets.only(bottom: 12),
+                        margin: const EdgeInsets.only(bottom: 16),
+                        elevation: reminder.isOverdue ? 4 : 3,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                          side: reminder.isOverdue
+                              ? BorderSide(
+                                  color: Theme.of(context).colorScheme.error,
+                                  width: 2,
+                                )
+                              : BorderSide.none,
+                        ),
                         color: reminder.isOverdue
-                            ? Theme.of(context).colorScheme.errorContainer
+                            ? Theme.of(context).colorScheme.errorContainer.withOpacity(0.3)
                             : null,
-                        child: ListTile(
-                          leading: CircleAvatar(
-                            backgroundColor: reminder.isOverdue
-                                ? Theme.of(context).colorScheme.error
-                                : Theme.of(context).colorScheme.tertiaryContainer,
-                            child: Icon(Icons.notifications,
-                                color: reminder.isOverdue
-                                    ? Theme.of(context).colorScheme.onError
-                                    : Theme.of(context)
-                                        .colorScheme
-                                        .onTertiaryContainer),
-                          ),
-                          title: Text(reminder.title,
-                              style:
-                                  const TextStyle(fontWeight: FontWeight.bold)),
-                          subtitle: Text(reminder.type),
-                          trailing: reminder.isCompleted
-                              ? const Icon(Icons.check_circle, color: Colors.green)
-                              : null,
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(16),
                           onTap: () => context.go('/reminders/${reminder.id}'),
+                          child: Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: Row(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(12),
+                                  decoration: BoxDecoration(
+                                    color: reminder.isOverdue
+                                        ? Theme.of(context).colorScheme.error
+                                        : reminder.isCompleted
+                                            ? Colors.green
+                                            : Theme.of(context).colorScheme.tertiaryContainer,
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: Icon(
+                                    reminder.isCompleted
+                                        ? Icons.check_circle
+                                        : reminder.isOverdue
+                                            ? Icons.warning
+                                            : Icons.notifications,
+                                    color: reminder.isOverdue
+                                        ? Theme.of(context).colorScheme.onError
+                                        : reminder.isCompleted
+                                            ? Colors.white
+                                            : Theme.of(context).colorScheme.onTertiaryContainer,
+                                    size: 28,
+                                  ),
+                                ),
+                                const SizedBox(width: 16),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Expanded(
+                                            child: Text(
+                                              reminder.title,
+                                              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                                    fontWeight: FontWeight.bold,
+                                                    decoration: reminder.isCompleted
+                                                        ? TextDecoration.lineThrough
+                                                        : null,
+                                                  ),
+                                            ),
+                                          ),
+                                          if (reminder.isOverdue && !reminder.isCompleted)
+                                            Container(
+                                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                              decoration: BoxDecoration(
+                                                color: Theme.of(context).colorScheme.error,
+                                                borderRadius: BorderRadius.circular(4),
+                                              ),
+                                              child: Text(
+                                                'OVERDUE',
+                                                style: TextStyle(
+                                                  fontSize: 10,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Theme.of(context).colorScheme.onError,
+                                                ),
+                                              ),
+                                            ),
+                                          if (reminder.isCompleted)
+                                            Container(
+                                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                              decoration: BoxDecoration(
+                                                color: Colors.green,
+                                                borderRadius: BorderRadius.circular(4),
+                                              ),
+                                              child: const Text(
+                                                'DONE',
+                                                style: TextStyle(
+                                                  fontSize: 10,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.white,
+                                                ),
+                                              ),
+                                            ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        reminder.type,
+                                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                              color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                      ),
+                                      if (reminder.dueDate != null) ...[
+                                        const SizedBox(height: 8),
+                                        Row(
+                                          children: [
+                                            Icon(
+                                              Icons.calendar_today,
+                                              size: 14,
+                                              color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                            ),
+                                            const SizedBox(width: 4),
+                                            Text(
+                                              'Due: ${reminder.dueDate!.day}/${reminder.dueDate!.month}/${reminder.dueDate!.year}',
+                                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                                    color: reminder.isOverdue
+                                                        ? Theme.of(context).colorScheme.error
+                                                        : Theme.of(context).colorScheme.onSurfaceVariant,
+                                                    fontWeight: reminder.isOverdue ? FontWeight.bold : null,
+                                                  ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ],
+                                  ),
+                                ),
+                                Icon(
+                                  Icons.chevron_right,
+                                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
                       );
                     },

@@ -5,6 +5,7 @@ import '../../auth/service/auth_provider.dart';
 import '../data/models/service_entry_model.dart';
 import '../service/service_entry_service.dart';
 
+import '../../../common/utils/format_helper.dart';
 /// ServiceListPage - List of all service entries
 class ServiceListPage extends StatefulWidget {
   const ServiceListPage({super.key});
@@ -40,6 +41,13 @@ class _ServiceListPageState extends State<ServiceListPage> {
     }
   }
 
+  Future<Map<String, String>> _getFormattedData(ServiceEntryModel entry) async {
+    return {
+      'cost': await FormatHelper.formatCurrency(entry.totalCost),
+      'odometer': await FormatHelper.formatDistance(entry.odometer),
+    };
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -54,28 +62,137 @@ class _ServiceListPageState extends State<ServiceListPage> {
                     itemCount: _entries.length,
                     itemBuilder: (context, index) {
                       final entry = _entries[index];
-                      return Card(
-                        margin: const EdgeInsets.only(bottom: 12),
-                        child: ListTile(
-                          leading: CircleAvatar(
-                            backgroundColor:
-                                Theme.of(context).colorScheme.primaryContainer,
-                            child: Icon(Icons.build,
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .onPrimaryContainer),
-                          ),
-                          title: Text(entry.serviceType,
-                              style:
-                                  const TextStyle(fontWeight: FontWeight.bold)),
-                          subtitle: Text(
-                              '${entry.date.day}/${entry.date.month}/${entry.date.year} • ${entry.odometer} km'),
-                          trailing: Text('\$${entry.totalCost.toStringAsFixed(2)}',
-                              style: TextStyle(
-                                  color: Theme.of(context).colorScheme.primary,
-                                  fontWeight: FontWeight.bold)),
-                          onTap: () => context.go('/service/${entry.id}'),
+
+                      return FutureBuilder<Map<String, String>>(
+                        future: _getFormattedData(entry),
+                        builder: (context, snapshot) {
+                          final data = snapshot.data ?? {};
+                          final cost = data['cost'] ?? '\$${entry.totalCost.toStringAsFixed(2)}';
+                          final odometer = data['odometer'] ?? '${entry.odometer} km';
+
+                          return Card(
+                        margin: const EdgeInsets.only(bottom: 16),
+                        elevation: 3,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
                         ),
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(16),
+                          onTap: () => context.go('/service/${entry.id}'),
+                          child: Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Container(
+                                      padding: const EdgeInsets.all(12),
+                                      decoration: BoxDecoration(
+                                        color: Theme.of(context).colorScheme.primaryContainer,
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      child: Icon(
+                                        Icons.build,
+                                        color: Theme.of(context).colorScheme.onPrimaryContainer,
+                                        size: 28,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 16),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            entry.serviceType,
+                                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                          ),
+                                          const SizedBox(height: 4),
+                                          Row(
+                                            children: [
+                                              Icon(
+                                                Icons.calendar_today,
+                                                size: 14,
+                                                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                              ),
+                                              const SizedBox(width: 4),
+                                              Text(
+                                                FormatHelper.formatDate(entry.date),
+                                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                                    ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Text(
+                                      cost,
+                                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                            color: Theme.of(context).colorScheme.primary,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 12),
+                                Container(
+                                  padding: const EdgeInsets.all(12),
+                                  decoration: BoxDecoration(
+                                    color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.3),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Icon(
+                                        Icons.speed,
+                                        size: 16,
+                                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Text(
+                                        'Odometer: $odometer',
+                                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                      ),
+                                      if (entry.serviceProvider != null && entry.serviceProvider!.isNotEmpty) ...[
+                                        const SizedBox(width: 16),
+                                        const Text('•'),
+                                        const SizedBox(width: 8),
+                                        Expanded(
+                                          child: Text(
+                                            entry.serviceProvider!,
+                                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                                  fontWeight: FontWeight.w500,
+                                                ),
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ),
+                                      ],
+                                    ],
+                                  ),
+                                ),
+                                if (entry.notes != null && entry.notes!.isNotEmpty) ...[
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    entry.notes!,
+                                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                        ),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ],
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                        },
                       );
                     },
                   ),
