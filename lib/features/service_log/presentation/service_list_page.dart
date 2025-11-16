@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../../../common/data/shared_preferences_helper.dart';
+import 'package:provider/provider.dart';
+import '../../auth/service/auth_provider.dart';
 import '../data/models/service_entry_model.dart';
 import '../service/service_entry_service.dart';
 
@@ -26,7 +27,7 @@ class _ServiceListPageState extends State<ServiceListPage> {
   Future<void> _loadEntries() async {
     setState(() => _isLoading = true);
     try {
-      final userId = await SharedPreferencesHelper.getUserId();
+      final userId = context.read<AuthProvider>().userId;
       if (userId != null) {
         final entries = await _service.getAllEntries(userId);
         setState(() {

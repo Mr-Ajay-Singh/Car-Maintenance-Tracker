@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../../../common/data/shared_preferences_helper.dart';
+import 'package:provider/provider.dart';
+import '../../auth/service/auth_provider.dart';
 import '../data/models/reminder_model.dart';
 import '../service/reminder_service.dart';
 
@@ -25,7 +26,7 @@ class _RemindersPageState extends State<RemindersPage> {
   Future<void> _load() async {
     setState(() => _isLoading = true);
     try {
-      final userId = await SharedPreferencesHelper.getUserId();
+      final userId = context.read<AuthProvider>().userId;
       if (userId != null) {
         final reminders = await _service.getAllReminders(userId);
         setState(() {

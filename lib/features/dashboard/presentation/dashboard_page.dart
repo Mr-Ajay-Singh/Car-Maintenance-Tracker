@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../../../common/data/shared_preferences_helper.dart';
+import 'package:provider/provider.dart';
+import '../../auth/service/auth_provider.dart';
 import '../data/models/dashboard_summary_model.dart';
 import '../service/dashboard_service.dart';
 import 'widgets/expense_summary_widget.dart';
@@ -36,7 +37,7 @@ class _DashboardPageState extends State<DashboardPage> {
     });
 
     try {
-      final userId = await SharedPreferencesHelper.getUserId();
+      final userId = context.read<AuthProvider>().userId;
       if (userId == null) {
         setState(() {
           _error = 'No user logged in';

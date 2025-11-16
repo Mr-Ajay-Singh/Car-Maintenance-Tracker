@@ -1,12 +1,13 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:car_maintenance_tracker/features/data_export/services/data_export_service.dart';
 import 'package:car_maintenance_tracker/features/data_export/services/file_service.dart';
 
 import '../../../l10n/app_localizations.dart';
 import '../../../utils/mixpanel_utils.dart';
-import '../../../common/data/shared_preferences_helper.dart';
+import '../../auth/service/auth_provider.dart';
 
 class DataExportPage extends StatefulWidget {
   final DateTime? initialStartDate;
@@ -227,8 +228,8 @@ class _DataExportPageState extends State<DataExportPage> {
   }
 
   Future<List<Map<String, dynamic>>> _getDataForExport() async {
-    // Get user ID from SharedPreferences
-    final userId = await SharedPreferencesHelper.getUserId();
+    // Get user ID from AuthProvider
+    final userId = context.read<AuthProvider>().userId;
     if (userId == null || userId.isEmpty) {
       throw Exception('User not logged in');
     }
