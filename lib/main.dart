@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'common/routes/app_router.dart';
 import 'common/theme/themes.dart';
+import 'common/widgets/splash_screen.dart';
 import 'features/auth/service/auth_provider.dart';
 import 'utils/firebase/firebase_options.dart';
 
@@ -32,6 +33,18 @@ class MyApp extends StatelessWidget {
       create: (_) => AuthProvider()..initialize(),
       child: Consumer<AuthProvider>(
         builder: (context, authProvider, _) {
+          // Show splash screen while initializing
+          if (authProvider.isLoading) {
+            return MaterialApp(
+              title: 'CarLog: Maintenance Tracker',
+              debugShowCheckedModeBanner: false,
+              theme: AppTheme.lightTheme,
+              darkTheme: AppTheme.darkTheme,
+              themeMode: ThemeMode.system,
+              home: const SplashScreen(),
+            );
+          }
+
           return MaterialApp.router(
             title: 'CarLog: Maintenance Tracker',
             debugShowCheckedModeBanner: false,

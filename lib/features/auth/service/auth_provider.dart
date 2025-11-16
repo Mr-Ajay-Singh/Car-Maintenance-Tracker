@@ -1,10 +1,12 @@
 import 'package:flutter/foundation.dart';
 import '../data/models/user_model.dart';
+import '../../sync/service/firebase_sync_service.dart';
 import 'firebase_auth_service.dart';
 
 /// Auth state provider for managing authentication state throughout the app
 class AuthProvider extends ChangeNotifier {
   final FirebaseAuthService _authService = FirebaseAuthService();
+  final FirebaseSyncService _syncService = FirebaseSyncService.instance;
 
   UserModel? _currentUser;
   bool _isLoading = false;
@@ -33,6 +35,11 @@ class AuthProvider extends ChangeNotifier {
           createdAt: user.metadata.creationTime ?? DateTime.now(),
           lastLoginAt: DateTime.now(),
         );
+
+        // Trigger background sync after successful auto-login
+        _syncService.syncAll().catchError((e) {
+          print('Background sync failed: $e');
+        });
       }
     } catch (e) {
       _errorMessage = e.toString();
@@ -62,6 +69,12 @@ class AuthProvider extends ChangeNotifier {
         );
         _isLoading = false;
         notifyListeners();
+
+        // Trigger background sync after successful login
+        _syncService.syncAll().catchError((e) {
+          print('Background sync failed: $e');
+        });
+
         return true;
       }
 
@@ -95,6 +108,12 @@ class AuthProvider extends ChangeNotifier {
         );
         _isLoading = false;
         notifyListeners();
+
+        // Trigger background sync after successful signup
+        _syncService.syncAll().catchError((e) {
+          print('Background sync failed: $e');
+        });
+
         return true;
       }
 
@@ -148,5 +167,15 @@ class AuthProvider extends ChangeNotifier {
   void clearError() {
     _errorMessage = null;
     notifyListeners();
+  }
+
+  /// Manually trigger sync
+  Future<bool> syncData() async {
+    try {
+      return await _syncService.syncAll();
+    } catch (e) {
+      print('Manual sync failed: $e');
+      return false;
+    }
   }
 }

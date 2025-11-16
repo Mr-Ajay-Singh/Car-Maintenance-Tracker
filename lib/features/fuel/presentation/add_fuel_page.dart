@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
-import '../../../common/data/shared_preferences_helper.dart';
+import '../../auth/service/auth_provider.dart';
 import '../data/models/fuel_entry_model.dart';
 import '../service/fuel_entry_service.dart';
 
@@ -34,7 +35,7 @@ class _AddFuelPageState extends State<AddFuelPage> {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _isSubmitting = true);
     try {
-      final userId = await SharedPreferencesHelper.getUserId();
+      final userId = context.read<AuthProvider>().userId;
       if (userId == null) throw Exception('No user logged in');
 
       final volume = double.parse(_volumeController.text);
