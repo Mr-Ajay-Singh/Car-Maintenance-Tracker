@@ -1,4 +1,5 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:sqflite/sqflite.dart';
 import 'package:uuid/uuid.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -17,33 +18,11 @@ class ReminderService {
   Future<String> addReminder(ReminderModel reminder) async {
     final db = await _dbHelper.database;
 
-    await db.rawInsert(ReminderModel.queryInsert, [
-      reminder.id,
-      reminder.vehicleId,
-      reminder.userId,
-      reminder.title,
-      reminder.type,
-      reminder.description,
-      reminder.dueDate?.toIso8601String(),
-      reminder.dueOdometer,
-      reminder.isRecurring ? 1 : 0,
-      reminder.recurrenceType?.name,
-      reminder.recurrenceWeekdays?.join(','),
-      reminder.recurrenceMonthDay,
-      reminder.recurringDays,
-      reminder.recurringOdometer,
-      reminder.notificationEnabled ? 1 : 0,
-      reminder.notificationDaysBefore,
-      reminder.notificationOdometerBefore,
-      reminder.isCompleted ? 1 : 0,
-      reminder.completedDate?.toIso8601String(),
-      reminder.createdAt.toIso8601String(),
-      reminder.updatedAt.toIso8601String(),
-      reminder.isDeleted ? 1 : 0,
-      reminder.isSynced ? 1 : 0,
-      reminder.firebaseId,
-      reminder.lastSyncedAt?.toIso8601String(),
-    ]);
+    await db.insert(
+      ReminderModel.tableName,
+      reminder.toMap(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
 
     // Schedule notification
     if (reminder.notificationEnabled) {
@@ -118,24 +97,12 @@ class ReminderService {
       isSynced: false,
     );
 
-    await db.rawUpdate(ReminderModel.queryUpdate, [
-      updatedReminder.title,
-      updatedReminder.type,
-      updatedReminder.description,
-      updatedReminder.dueDate?.toIso8601String(),
-      updatedReminder.dueOdometer,
-      updatedReminder.isRecurring ? 1 : 0,
-      updatedReminder.recurrenceType?.name,
-      updatedReminder.recurrenceWeekdays?.join(','),
-      updatedReminder.recurrenceMonthDay,
-      updatedReminder.recurringDays,
-      updatedReminder.recurringOdometer,
-      updatedReminder.notificationEnabled ? 1 : 0,
-      updatedReminder.notificationDaysBefore,
-      updatedReminder.notificationOdometerBefore,
-      updatedReminder.updatedAt.toIso8601String(),
-      updatedReminder.id,
-    ]);
+    await db.update(
+      ReminderModel.tableName,
+      updatedReminder.toMap(),
+      where: 'id = ?',
+      whereArgs: [updatedReminder.id],
+    );
 
     // Reschedule notification
     await _cancelNotification(reminder.id);

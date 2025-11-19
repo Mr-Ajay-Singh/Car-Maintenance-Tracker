@@ -158,7 +158,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
                 ),
                 const SizedBox(height: 16),
                 DropdownButtonFormField<String>(
-                  value: _category,
+                  initialValue: _category,
                   decoration: InputDecoration(
                     labelText: 'Category',
                     filled: true,

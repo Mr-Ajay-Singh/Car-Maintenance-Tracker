@@ -115,6 +115,11 @@ class _AddReminderPageState extends State<AddReminderPage> {
       final userId = context.read<AuthProvider>().userId;
       if (userId == null) throw Exception('No user logged in');
 
+      // Request notification permissions if enabled
+      if (_notificationEnabled) {
+        await _service.initializeNotifications();
+      }
+
       final reminder = ReminderModel(
         id: const Uuid().v4(),
         vehicleId: widget.vehicleId ?? '',
@@ -139,7 +144,7 @@ class _AddReminderPageState extends State<AddReminderPage> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Reminder scheduled successfully'), behavior: SnackBarBehavior.floating));
-        context.pop();
+        context.pop(true); // Return true to trigger refresh
       }
     } catch (e) {
       if (mounted) {
@@ -193,7 +198,7 @@ class _AddReminderPageState extends State<AddReminderPage> {
                     labelText: 'Title',
                     hintText: 'e.g., Oil Change',
                     filled: true,
-                    fillColor: colorScheme.surfaceContainerHighest.withOpacity(0.3),
+                    fillColor: colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: BorderSide.none,
@@ -210,7 +215,7 @@ class _AddReminderPageState extends State<AddReminderPage> {
                     labelText: 'Type',
                     hintText: 'e.g., Service, Insurance',
                     filled: true,
-                    fillColor: colorScheme.surfaceContainerHighest.withOpacity(0.3),
+                    fillColor: colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: BorderSide.none,
@@ -226,7 +231,7 @@ class _AddReminderPageState extends State<AddReminderPage> {
                   decoration: InputDecoration(
                     labelText: 'Notes (Optional)',
                     filled: true,
-                    fillColor: colorScheme.surfaceContainerHighest.withOpacity(0.3),
+                    fillColor: colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: BorderSide.none,
@@ -253,7 +258,7 @@ class _AddReminderPageState extends State<AddReminderPage> {
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
                     decoration: BoxDecoration(
-                      color: colorScheme.surfaceContainerHighest.withOpacity(0.3),
+                      color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(color: Colors.transparent),
                     ),
@@ -279,7 +284,7 @@ class _AddReminderPageState extends State<AddReminderPage> {
                                   : 'Select Date',
                                 style: TextStyle(
                                   fontSize: 16,
-                                  color: _dueDate != null ? colorScheme.onSurface : colorScheme.onSurface.withOpacity(0.5),
+                                  color: _dueDate != null ? colorScheme.onSurface : colorScheme.onSurface.withValues(alpha: 0.5),
                                 ),
                               ),
                             ],
@@ -298,13 +303,22 @@ class _AddReminderPageState extends State<AddReminderPage> {
                     labelText: 'Due Odometer (Optional)',
                     suffixText: 'km',
                     filled: true,
-                    fillColor: colorScheme.surfaceContainerHighest.withOpacity(0.3),
+                    fillColor: colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: BorderSide.none,
                     ),
                     prefixIcon: const Icon(Icons.speed_rounded),
                   ),
+                ),
+                const SizedBox(height: 16),
+                SwitchListTile(
+                  contentPadding: EdgeInsets.zero,
+                  title: const Text('Enable Notification'),
+                  subtitle: const Text('Get notified when due'),
+                  value: _notificationEnabled,
+                  onChanged: (val) => setState(() => _notificationEnabled = val),
+                  activeThumbColor: colorScheme.primary,
                 ),
               ],
             ),
@@ -322,11 +336,11 @@ class _AddReminderPageState extends State<AddReminderPage> {
               children: [
                 if (_isRecurring) ...[
                   DropdownButtonFormField<RecurrenceType>(
-                    value: _recurrenceType,
+                    initialValue: _recurrenceType,
                     decoration: InputDecoration(
                       labelText: 'Frequency',
                       filled: true,
-                      fillColor: colorScheme.surfaceContainerHighest.withOpacity(0.3),
+                      fillColor: colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: BorderSide.none,
@@ -371,7 +385,7 @@ class _AddReminderPageState extends State<AddReminderPage> {
                               side: BorderSide(
                                 color: _selectedWeekdays.contains(i) 
                                   ? Colors.transparent 
-                                  : colorScheme.outline.withOpacity(0.5),
+                                  : colorScheme.outline.withValues(alpha: 0.5),
                               ),
                             ),
                           ),
@@ -384,7 +398,7 @@ class _AddReminderPageState extends State<AddReminderPage> {
                       decoration: InputDecoration(
                         labelText: 'Day of Month (1-31)',
                         filled: true,
-                        fillColor: colorScheme.surfaceContainerHighest.withOpacity(0.3),
+                        fillColor: colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: BorderSide.none,
@@ -405,7 +419,7 @@ class _AddReminderPageState extends State<AddReminderPage> {
                       decoration: InputDecoration(
                         labelText: 'Repeat every (days)',
                         filled: true,
-                        fillColor: colorScheme.surfaceContainerHighest.withOpacity(0.3),
+                        fillColor: colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: BorderSide.none,
@@ -427,7 +441,7 @@ class _AddReminderPageState extends State<AddReminderPage> {
                     decoration: InputDecoration(
                       labelText: 'Repeat every (km) - Optional',
                       filled: true,
-                      fillColor: colorScheme.surfaceContainerHighest.withOpacity(0.3),
+                      fillColor: colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: BorderSide.none,

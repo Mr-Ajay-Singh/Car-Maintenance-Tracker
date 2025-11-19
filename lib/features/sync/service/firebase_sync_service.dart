@@ -557,47 +557,17 @@ class FirebaseSyncService {
         );
 
         if (existing.isEmpty) {
-          await db.rawInsert(ReminderModel.queryInsert, [
-            reminder.id,
-            reminder.vehicleId,
-            reminder.userId,
-            reminder.title,
-            reminder.description,
-            reminder.type,
-            reminder.dueDate?.toIso8601String(),
-            reminder.dueOdometer,
-            reminder.isCompleted ? 1 : 0,
-            reminder.completedDate?.toIso8601String(),
-            reminder.createdAt.toIso8601String(),
-            reminder.updatedAt.toIso8601String(),
-            reminder.isDeleted ? 1 : 0,
-            1, // isSynced
-            reminder.firebaseId,
-            DateTime.now().toIso8601String(),
-          ]);
+          await db.insert(
+            ReminderModel.tableName,
+            reminder.toMap(),
+            conflictAlgorithm: ConflictAlgorithm.replace,
+          );
         } else {
-          await db.rawUpdate(
-            '''UPDATE reminders SET
-               vehicleId = ?, title = ?, description = ?, reminderType = ?,
-               dueDate = ?, dueOdometer = ?, isCompleted = ?, completedAt = ?,
-               updatedAt = ?, isDeleted = ?, isSynced = 1,
-               firebaseId = ?, lastSyncedAt = ?
-               WHERE id = ?''',
-            [
-              reminder.vehicleId,
-              reminder.title,
-              reminder.description,
-              reminder.type,
-              reminder.dueDate?.toIso8601String(),
-              reminder.dueOdometer,
-              reminder.isCompleted ? 1 : 0,
-              reminder.completedDate?.toIso8601String(),
-              reminder.updatedAt.toIso8601String(),
-              reminder.isDeleted ? 1 : 0,
-              reminder.firebaseId,
-              DateTime.now().toIso8601String(),
-              reminder.id,
-            ],
+          await db.update(
+            ReminderModel.tableName,
+            reminder.toMap(),
+            where: 'id = ?',
+            whereArgs: [reminder.id],
           );
         }
       } catch (e) {

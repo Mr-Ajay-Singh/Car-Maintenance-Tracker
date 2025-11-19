@@ -179,7 +179,7 @@ class _AddFuelPageState extends State<AddFuelPage> {
                 )
               else
                 DropdownButtonFormField<String>(
-                  value: _selectedVehicleId,
+                  initialValue: _selectedVehicleId,
                   decoration: InputDecoration(
                     labelText: 'Vehicle',
                     filled: true,

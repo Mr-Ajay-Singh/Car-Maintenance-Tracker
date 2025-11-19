@@ -1,4 +1,5 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:flutter/foundation.dart';
 import 'package:sqflite/sqflite.dart';
 import '../../../common/data/database_helper.dart';
 import '../../../common/data/firestore_helper.dart';
@@ -6,25 +7,32 @@ import '../data/models/expense_model.dart';
 
 /// ExpenseService - Service class for expense tracking and statistics
 class ExpenseService {
-  final DatabaseHelper _dbHelper = DatabaseHelper.instance;
+  final DatabaseHelper _dbHelper = DatabaseHelper();
 
   // CREATE
   Future<String> addExpense(ExpenseModel expense) async {
     final db = await _dbHelper.database;
 
-    await db.insert(
-      ExpenseModel.tableName,
-      expense.toMap(),
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
+    try {
+      await db.insert(
+        ExpenseModel.tableName,
+        expense.toMap(),
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
 
-    // Try to sync immediately if online
-    if (await _isOnline()) {
-      try {
-        await _syncExpenseToFirestore(expense);
-      } catch (e) {
-        print('Sync failed: $e');
+      // Try to sync immediately if online
+      if (await _isOnline()) {
+        try {
+          await _syncExpenseToFirestore(expense);
+        } catch (e) {
+          debugPrint('Sync failed for addExpense: $e');
+          // Do not rethrow here, local save was successful.
+          // The expense will remain unsynced and picked up by syncUnsyncedExpenses later.
+        }
       }
+    } catch (e) {
+      debugPrint('Error adding expense to local DB: $e');
+      rethrow; // Rethrow if local DB insert fails
     }
 
     return expense.id;
@@ -151,7 +159,7 @@ class ExpenseService {
       try {
         await _syncExpenseToFirestore(updatedExpense);
       } catch (e) {
-        print('Sync failed: $e');
+        debugPrint('Sync failed: $e');
       }
     }
   }
@@ -171,7 +179,7 @@ class ExpenseService {
       try {
         await _deleteFromFirestore(expense.userId, expense.firebaseId!);
       } catch (e) {
-        print('Sync failed: $e');
+        debugPrint('Sync failed: $e');
       }
     }
   }
@@ -191,7 +199,7 @@ class ExpenseService {
         final expense = ExpenseModel.fromMap(row);
         await _syncExpenseToFirestore(expense);
       } catch (e) {
-        print('Failed to sync expense: $e');
+        debugPrint('Error adding expense: $e');
       }
     }
   }

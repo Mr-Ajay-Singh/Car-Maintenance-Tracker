@@ -1,5 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-
 /// RecurrenceType - Enum for recurrence frequency
 enum RecurrenceType { daily, weekly, monthly, interval }
 

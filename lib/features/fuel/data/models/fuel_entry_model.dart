@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 /// FuelEntryModel - Data model for fuel fill-up entries
 class FuelEntryModel {

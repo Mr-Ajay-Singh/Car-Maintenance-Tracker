@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 /// ServicePart - Nested model for parts used in service
 class ServicePart {

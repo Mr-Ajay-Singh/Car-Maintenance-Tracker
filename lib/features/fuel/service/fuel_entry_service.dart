@@ -1,5 +1,6 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:flutter/foundation.dart';
 import '../../../common/data/database_helper.dart';
 import '../../../common/data/firestore_helper.dart';
 import '../../vehicle/service/vehicle_service.dart';
@@ -28,7 +29,7 @@ class FuelEntryService {
       try {
         await _syncEntryToFirestore(entry);
       } catch (e) {
-        print('Sync failed: $e');
+        debugPrint('Sync failed: $e');
       }
     }
 
@@ -182,7 +183,7 @@ class FuelEntryService {
       try {
         await _syncEntryToFirestore(updatedEntry);
       } catch (e) {
-        print('Sync failed: $e');
+        debugPrint('Sync failed: $e');
       }
     }
   }
@@ -202,7 +203,7 @@ class FuelEntryService {
       try {
         await _deleteFromFirestore(entry.userId, entry.firebaseId!);
       } catch (e) {
-        print('Sync failed: $e');
+        debugPrint('Sync failed: $e');
       }
     }
   }
@@ -262,7 +263,7 @@ class FuelEntryService {
         final entry = FuelEntryModel.fromMap(row);
         await _syncEntryToFirestore(entry);
       } catch (e) {
-        print('Failed to sync fuel entry: $e');
+        debugPrint('Error adding fuel entry: $e');
       }
     }
   }
