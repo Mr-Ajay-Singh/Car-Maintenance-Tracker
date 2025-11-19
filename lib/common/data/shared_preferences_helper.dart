@@ -16,6 +16,7 @@ class SharedPreferencesHelper {
   static const String _keyCurrency = 'currency';
   static const String _keyVolumeUnit = 'volumeUnit';
   static const String _keyDistanceUnit = 'distanceUnit';
+  static const String _keyOnboardingCompleted = 'onboardingCompleted';
 
   // ==================== USER ID ====================
 
@@ -141,6 +142,20 @@ class SharedPreferencesHelper {
   static Future<bool> setDistanceUnit(String unit) async {
     final prefs = await SharedPreferences.getInstance();
     return await prefs.setString(_keyDistanceUnit, unit);
+  }
+
+  // ==================== ONBOARDING ====================
+
+  /// Check if onboarding has been completed
+  static Future<bool> getOnboardingCompleted() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_keyOnboardingCompleted) ?? false;
+  }
+
+  /// Set onboarding completion status
+  static Future<bool> setOnboardingCompleted(bool completed) async {
+    final prefs = await SharedPreferences.getInstance();
+    return await prefs.setBool(_keyOnboardingCompleted, completed);
   }
 
   // ==================== CLEAR ALL ====================

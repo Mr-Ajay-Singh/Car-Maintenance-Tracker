@@ -27,7 +27,10 @@ import '../../features/settings/presentation/settings_page.dart';
 import '../../features/vehicle/presentation/add_vehicle_page.dart';
 import '../../features/vehicle/presentation/vehicle_detail_page.dart';
 import '../../features/vehicle/presentation/vehicle_list_page.dart';
+import '../../features/vehicle/presentation/vehicle_list_page.dart';
 import '../widgets/main_scaffold.dart';
+import '../../features/onboarding/presentation/onboarding_page.dart';
+import '../data/shared_preferences_helper.dart';
 
 /// AppRouter - Centralized routing configuration using go_router
 class AppRouter {
@@ -35,14 +38,28 @@ class AppRouter {
     return GoRouter(
       initialLocation: '/',
       refreshListenable: authProvider,
-      redirect: (context, state) {
+      redirect: (context, state) async {
         final isAuthenticated = authProvider.isAuthenticated;
         final isAuthRoute = state.matchedLocation.startsWith('/login') ||
             state.matchedLocation.startsWith('/signup') ||
             state.matchedLocation.startsWith('/forgot-password');
+        final isOnboardingRoute = state.matchedLocation == '/onboarding';
+
+        // Check if onboarding is completed
+        final onboardingCompleted = await SharedPreferencesHelper.getOnboardingCompleted();
+
+        // If onboarding not completed and not on onboarding page, redirect to onboarding
+        if (!onboardingCompleted && !isOnboardingRoute) {
+          return '/onboarding';
+        }
+
+        // If onboarding completed and on onboarding page, redirect to login or dashboard
+        if (onboardingCompleted && isOnboardingRoute) {
+          return isAuthenticated ? '/' : '/login';
+        }
 
         // If not authenticated and trying to access protected route, redirect to login
-        if (!isAuthenticated && !isAuthRoute) {
+        if (!isAuthenticated && !isAuthRoute && !isOnboardingRoute) {
           return '/login';
         }
 
@@ -54,6 +71,12 @@ class AppRouter {
         return null; // No redirect
       },
       routes: [
+        // Onboarding
+        GoRoute(
+          path: '/onboarding',
+          name: 'onboarding',
+          builder: (context, state) => const OnboardingPage(),
+        ),
         // Authentication routes (outside ShellRoute, no bottom nav)
         GoRoute(
           path: '/login',

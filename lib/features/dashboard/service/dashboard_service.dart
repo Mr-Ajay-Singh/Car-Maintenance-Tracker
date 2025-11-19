@@ -206,7 +206,8 @@ class DashboardService {
     if (vehicles.isEmpty) return null;
 
     final now = DateTime.now();
-    final thirtyDaysAgo = now.subtract(const Duration(days: 30));
+    // Use a far past date to get "All Time" stats
+    final allTimeStart = DateTime(2000);
 
     double totalCost = 0;
     double totalVolume = 0;
@@ -215,12 +216,12 @@ class DashboardService {
     for (final vehicle in vehicles) {
       final cost = await _fuelService.getTotalCost(
         vehicle.id,
-        thirtyDaysAgo,
+        allTimeStart,
         now,
       );
       final volume = await _fuelService.getTotalVolume(
         vehicle.id,
-        thirtyDaysAgo,
+        allTimeStart,
         now,
       );
       final avgEconomy = await _fuelService.getAverageFuelEconomy(vehicle.id);
@@ -238,19 +239,19 @@ class DashboardService {
       averageMpg: avgMpg,
       totalCost: totalCost,
       totalVolume: totalVolume,
-      period: 'Last 30 days',
+      period: 'All Time',
     );
   }
 
-  /// Calculate expense summary for current month
+  /// Calculate expense summary for all time
   Future<ExpenseSummary?> _getExpenseSummary(
     List<VehicleModel> vehicles,
   ) async {
     if (vehicles.isEmpty) return null;
 
     final now = DateTime.now();
-    final monthStart = DateTime(now.year, now.month, 1);
-    final monthEnd = DateTime(now.year, now.month + 1, 0);
+    // Use a far past date to get "All Time" stats
+    final allTimeStart = DateTime(2000);
 
     double totalExpenses = 0;
     double serviceExpenses = 0;
@@ -261,24 +262,24 @@ class DashboardService {
       // Service costs
       final serviceCost = await _serviceService.getTotalCost(
         vehicle.id,
-        monthStart,
-        monthEnd,
+        allTimeStart,
+        now,
       );
       serviceExpenses += serviceCost;
 
       // Fuel costs
       final fuelCost = await _fuelService.getTotalCost(
         vehicle.id,
-        monthStart,
-        monthEnd,
+        allTimeStart,
+        now,
       );
       fuelExpenses += fuelCost;
 
       // Other expenses
       final expenses = await _expenseService.getTotalExpenses(
         vehicle.id,
-        monthStart,
-        monthEnd,
+        allTimeStart,
+        now,
       );
       otherExpenses += expenses;
     }
@@ -290,7 +291,7 @@ class DashboardService {
       serviceExpenses: serviceExpenses,
       fuelExpenses: fuelExpenses,
       otherExpenses: otherExpenses,
-      period: 'This month',
+      period: 'All Time',
     );
   }
 
