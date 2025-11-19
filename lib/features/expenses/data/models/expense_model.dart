@@ -1,5 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-
 /// ExpenseModel - Data model for vehicle expenses
 class ExpenseModel {
   final String id;

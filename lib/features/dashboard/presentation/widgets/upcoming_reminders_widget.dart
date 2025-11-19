@@ -27,12 +27,12 @@ class UpcomingRemindersWidget extends StatelessWidget {
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(
                   color: reminder.isOverdue
-                      ? Theme.of(context).colorScheme.error.withOpacity(0.5)
+                      ? Theme.of(context).colorScheme.error.withValues(alpha: 0.5)
                       : Theme.of(context).colorScheme.outlineVariant,
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: Theme.of(context).colorScheme.shadow.withOpacity(0.05),
+                    color: Theme.of(context).colorScheme.shadow.withValues(alpha: 0.05),
                     blurRadius: 10,
                     offset: const Offset(0, 4),
                   ),

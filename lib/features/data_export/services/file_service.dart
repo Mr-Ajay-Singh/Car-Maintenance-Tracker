@@ -189,6 +189,7 @@ class FileService {
     String description,
   ) async {
     try {
+      // ignore: deprecated_member_use
       await Share.shareXFiles(
         [XFile(file.path)],
         text: description,

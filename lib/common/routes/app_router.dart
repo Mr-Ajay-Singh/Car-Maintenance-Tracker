@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../features/auth/presentation/forgot_password_page.dart';
 import '../../features/auth/presentation/login_page.dart';
@@ -27,7 +26,6 @@ import '../../features/settings/presentation/profile_page.dart';
 import '../../features/settings/presentation/settings_page.dart';
 import '../../features/vehicle/presentation/add_vehicle_page.dart';
 import '../../features/vehicle/presentation/vehicle_detail_page.dart';
-import '../../features/vehicle/presentation/vehicle_list_page.dart';
 import '../../features/vehicle/presentation/vehicle_list_page.dart';
 import '../widgets/main_scaffold.dart';
 import '../../features/onboarding/presentation/onboarding_page.dart';

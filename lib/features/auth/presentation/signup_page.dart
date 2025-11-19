@@ -103,7 +103,7 @@ class _SignUpPageState extends State<SignUpPage> {
                           color: Theme.of(context)
                               .colorScheme
                               .onSurface
-                              .withOpacity(0.6),
+                              .withValues(alpha: 0.6),
                         ),
                   ),
                   const SizedBox(height: 48),

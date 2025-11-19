@@ -8,6 +8,9 @@ import 'common/widgets/splash_screen.dart';
 import 'features/auth/service/auth_provider.dart';
 import 'utils/firebase/firebase_options.dart';
 
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'l10n/app_localizations.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -43,6 +46,15 @@ class MyApp extends StatelessWidget {
               theme: AppTheme.lightTheme,
               darkTheme: AppTheme.darkTheme,
               themeMode: ThemeMode.system,
+              localizationsDelegates: const [
+                AppLocalizations.delegate,
+                GlobalMaterialLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate,
+                GlobalCupertinoLocalizations.delegate,
+              ],
+              supportedLocales: const [
+                Locale('en'), // English
+              ],
               home: const SplashScreen(),
             );
           }
@@ -53,6 +65,15 @@ class MyApp extends StatelessWidget {
             theme: AppTheme.lightTheme,
             darkTheme: AppTheme.darkTheme,
             themeMode: ThemeMode.system,
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: const [
+              Locale('en'), // English
+            ],
             routerConfig: AppRouter.createRouter(authProvider),
           );
         },

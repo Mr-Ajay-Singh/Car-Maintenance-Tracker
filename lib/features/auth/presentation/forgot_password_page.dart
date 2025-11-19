@@ -106,7 +106,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color:
-                      Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                      Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                 ),
           ),
           const SizedBox(height: 48),
@@ -230,7 +230,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
           textAlign: TextAlign.center,
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                 color:
-                    Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                    Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
               ),
         ),
         const SizedBox(height: 8),
@@ -240,7 +240,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
           textAlign: TextAlign.center,
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
                 color:
-                    Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+                    Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
               ),
         ),
         const SizedBox(height: 48),

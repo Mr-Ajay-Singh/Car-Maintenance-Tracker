@@ -6,7 +6,6 @@ import '../../auth/service/auth_provider.dart';
 import '../data/models/fuel_entry_model.dart';
 import '../service/fuel_entry_service.dart';
 import '../../vehicle/service/vehicle_service.dart';
-import '../../vehicle/data/models/vehicle_model.dart';
 
 class AddFuelPage extends StatefulWidget {
   final String? vehicleId;
@@ -183,7 +182,7 @@ class _AddFuelPageState extends State<AddFuelPage> {
                   decoration: InputDecoration(
                     labelText: 'Vehicle',
                     filled: true,
-                    fillColor: colorScheme.surfaceContainerHighest.withOpacity(0.3),
+                    fillColor: colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: BorderSide.none,
@@ -224,7 +223,7 @@ class _AddFuelPageState extends State<AddFuelPage> {
                     decoration: InputDecoration(
                       labelText: 'Date',
                       filled: true,
-                      fillColor: colorScheme.surfaceContainerHighest.withOpacity(0.3),
+                      fillColor: colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: BorderSide.none,
@@ -247,7 +246,7 @@ class _AddFuelPageState extends State<AddFuelPage> {
                           labelText: 'Volume',
                           suffixText: 'L',
                           filled: true,
-                          fillColor: colorScheme.surfaceContainerHighest.withOpacity(0.3),
+                          fillColor: colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                             borderSide: BorderSide.none,
@@ -271,7 +270,7 @@ class _AddFuelPageState extends State<AddFuelPage> {
                           labelText: 'Total Cost',
                           prefixText: '\$',
                           filled: true,
-                          fillColor: colorScheme.surfaceContainerHighest.withOpacity(0.3),
+                          fillColor: colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                             borderSide: BorderSide.none,
@@ -305,7 +304,7 @@ class _AddFuelPageState extends State<AddFuelPage> {
                     labelText: 'Odometer',
                     suffixText: 'km',
                     filled: true,
-                    fillColor: colorScheme.surfaceContainerHighest.withOpacity(0.3),
+                    fillColor: colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: BorderSide.none,

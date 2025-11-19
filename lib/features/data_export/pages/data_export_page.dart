@@ -373,10 +373,10 @@ class _DataExportPageState extends State<DataExportPage> {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: theme.surfaceDim,
+                color: theme.surfaceContainerHighest,
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                  color: theme.primary.withOpacity(0.3),
+                  color: theme.primary.withValues(alpha: 0.3),
                 ),
               ),
               child: Column(
@@ -510,7 +510,7 @@ class _DataExportPageState extends State<DataExportPage> {
         color: theme.surfaceDim,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: theme.outline.withOpacity(0.3),
+          color: theme.outline.withValues(alpha: 0.3),
         ),
       ),
       child: Padding(
@@ -594,7 +594,7 @@ class _DataExportPageState extends State<DataExportPage> {
           color: theme.surfaceDim,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: theme.outline.withOpacity(0.3),
+            color: theme.outline.withValues(alpha: 0.3),
           ),
         ),
         child: Column(
@@ -604,7 +604,7 @@ class _DataExportPageState extends State<DataExportPage> {
               label,
               style: TextStyle(
                 fontSize: 12,
-                color: theme.onSurface.withOpacity(0.7),
+                color: theme.onSurface.withValues(alpha: 0.7),
               ),
             ),
             const SizedBox(height: 8),
@@ -653,7 +653,7 @@ class _DataExportPageState extends State<DataExportPage> {
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
               color:
-                  isSelected ? theme.primary : theme.outline.withOpacity(0.3),
+                  isSelected ? theme.primary : theme.outline.withValues(alpha: 0.3),
               width: isSelected ? 2 : 1,
             ),
           ),
@@ -666,8 +666,8 @@ class _DataExportPageState extends State<DataExportPage> {
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
                       color: isSelected
-                          ? theme.primary.withOpacity(0.2)
-                          : theme.surfaceVariant.withOpacity(0.3),
+                          ? theme.primary.withValues(alpha: 0.2)
+                          : theme.surfaceVariant.withValues(alpha: 0.3),
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
@@ -692,7 +692,7 @@ class _DataExportPageState extends State<DataExportPage> {
                 description,
                 style: TextStyle(
                   fontSize: 12,
-                  color: theme.onSurface.withOpacity(0.7),
+                  color: theme.onSurface.withValues(alpha: 0.7),
                 ),
               ),
             ],

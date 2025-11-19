@@ -14,11 +14,11 @@ class RecentActivityWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       elevation: 2,
-      shadowColor: Theme.of(context).colorScheme.shadow.withOpacity(0.1),
+      shadowColor: Theme.of(context).colorScheme.shadow.withValues(alpha: 0.1),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(24),
         side: BorderSide(
-          color: Theme.of(context).colorScheme.outlineVariant.withOpacity(0.5),
+          color: Theme.of(context).colorScheme.outlineVariant.withValues(alpha: 0.5),
         ),
       ),
       child: ListView.separated(
@@ -28,7 +28,7 @@ class RecentActivityWidget extends StatelessWidget {
         itemCount: activities.length,
         separatorBuilder: (context, index) => Divider(
           height: 32,
-          color: Theme.of(context).colorScheme.outlineVariant.withOpacity(0.5),
+          color: Theme.of(context).colorScheme.outlineVariant.withValues(alpha: 0.5),
         ),
         itemBuilder: (context, index) {
           final activity = activities[index];

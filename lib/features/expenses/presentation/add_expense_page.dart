@@ -143,7 +143,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
                     decoration: InputDecoration(
                       labelText: 'Date',
                       filled: true,
-                      fillColor: colorScheme.surfaceContainerHighest.withOpacity(0.3),
+                      fillColor: colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: BorderSide.none,
@@ -162,7 +162,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
                   decoration: InputDecoration(
                     labelText: 'Category',
                     filled: true,
-                    fillColor: colorScheme.surfaceContainerHighest.withOpacity(0.3),
+                    fillColor: colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: BorderSide.none,
@@ -183,7 +183,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
                     labelText: 'Amount',
                     prefixText: '\$',
                     filled: true,
-                    fillColor: colorScheme.surfaceContainerHighest.withOpacity(0.3),
+                    fillColor: colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: BorderSide.none,
@@ -213,7 +213,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
                   decoration: InputDecoration(
                     labelText: 'Description (Optional)',
                     filled: true,
-                    fillColor: colorScheme.surfaceContainerHighest.withOpacity(0.3),
+                    fillColor: colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: BorderSide.none,
@@ -248,11 +248,11 @@ class _AddExpensePageState extends State<AddExpensePage> {
                 if (_isRecurring) ...[
                   const SizedBox(height: 16),
                   DropdownButtonFormField<String>(
-                    value: _recurringPeriod,
+                    initialValue: _recurringPeriod,
                     decoration: InputDecoration(
                       labelText: 'Frequency',
                       filled: true,
-                      fillColor: colorScheme.surfaceContainerHighest.withOpacity(0.3),
+                      fillColor: colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: BorderSide.none,

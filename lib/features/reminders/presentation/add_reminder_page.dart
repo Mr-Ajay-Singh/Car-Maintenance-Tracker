@@ -325,7 +325,7 @@ class _AddReminderPageState extends State<AddReminderPage> {
                 if (_notificationEnabled) ...[
                   const SizedBox(height: 16),
                   DropdownButtonFormField<int>(
-                    value: _notificationDaysBefore,
+                    initialValue: _notificationDaysBefore,
                     decoration: InputDecoration(
                       labelText: 'Remind me',
                       filled: true,
