@@ -165,7 +165,7 @@ class AppDrawer extends StatelessWidget {
             title: const Text('Fuel Tracker'),
             onTap: () {
               Navigator.pop(context);
-              context.go('/fuel');
+              context.push('/fuel');
             },
           ),
           ListTile(

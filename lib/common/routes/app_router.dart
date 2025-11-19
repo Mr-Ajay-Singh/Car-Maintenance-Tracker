@@ -10,6 +10,7 @@ import '../../features/expenses/presentation/add_expense_page.dart';
 import '../../features/expenses/presentation/expense_stats_page.dart';
 import '../../features/expenses/presentation/expenses_page.dart';
 import '../../features/fuel/presentation/add_fuel_page.dart';
+import '../../features/fuel/presentation/fuel_detail_page.dart';
 import '../../features/fuel/presentation/fuel_list_page.dart';
 import '../../features/fuel/presentation/fuel_stats_page.dart';
 import '../../features/reminders/presentation/add_reminder_page.dart';
@@ -204,6 +205,14 @@ class AppRouter {
             builder: (context, state) {
               final vehicleId = state.uri.queryParameters['vehicleId'];
               return FuelStatsPage(vehicleId: vehicleId);
+            },
+          ),
+          GoRoute(
+            path: ':fuelId',
+            name: 'fuel-detail',
+            builder: (context, state) {
+              final fuelId = state.pathParameters['fuelId']!;
+              return FuelDetailPage(entryId: fuelId);
             },
           ),
         ],
