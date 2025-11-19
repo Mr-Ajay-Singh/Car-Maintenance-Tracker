@@ -1,5 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+/// RecurrenceType - Enum for recurrence frequency
+enum RecurrenceType { daily, weekly, monthly, interval }
+
 /// ReminderModel - Data model for maintenance reminders
 class ReminderModel {
   final String id;
@@ -11,7 +14,10 @@ class ReminderModel {
   final DateTime? dueDate;
   final int? dueOdometer;
   final bool isRecurring;
-  final int? recurringDays; // if time-based recurring
+  final RecurrenceType? recurrenceType;
+  final List<int>? recurrenceWeekdays; // 1-7 (Mon-Sun)
+  final int? recurrenceMonthDay; // 1-31
+  final int? recurringDays; // if interval-based recurring
   final int? recurringOdometer; // if mileage-based recurring
   final bool notificationEnabled;
   final int notificationDaysBefore;
@@ -55,6 +61,9 @@ class ReminderModel {
     this.dueDate,
     this.dueOdometer,
     this.isRecurring = false,
+    this.recurrenceType,
+    this.recurrenceWeekdays,
+    this.recurrenceMonthDay,
     this.recurringDays,
     this.recurringOdometer,
     this.notificationEnabled = true,
@@ -115,19 +124,20 @@ class ReminderModel {
   ''';
 
   static const String queryInsert = '''
-    INSERT INTO reminders (
       id, vehicleId, userId, title, type, description,
-      dueDate, dueOdometer, isRecurring, recurringDays, recurringOdometer,
+      dueDate, dueOdometer, isRecurring, recurrenceType, recurrenceWeekdays,
+      recurrenceMonthDay, recurringDays, recurringOdometer,
       notificationEnabled, notificationDaysBefore, notificationOdometerBefore,
       isCompleted, completedDate, createdAt, updatedAt, isDeleted,
       isSynced, firebaseId, lastSyncedAt
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   ''';
 
   static const String queryUpdate = '''
     UPDATE reminders SET
       title = ?, type = ?, description = ?,
       dueDate = ?, dueOdometer = ?, isRecurring = ?,
+      recurrenceType = ?, recurrenceWeekdays = ?, recurrenceMonthDay = ?,
       recurringDays = ?, recurringOdometer = ?,
       notificationEnabled = ?, notificationDaysBefore = ?,
       notificationOdometerBefore = ?,
@@ -167,6 +177,9 @@ class ReminderModel {
       'dueDate': dueDate?.toIso8601String(),
       'dueOdometer': dueOdometer,
       'isRecurring': isRecurring ? 1 : 0,
+      'recurrenceType': recurrenceType?.name,
+      'recurrenceWeekdays': recurrenceWeekdays?.join(','),
+      'recurrenceMonthDay': recurrenceMonthDay,
       'recurringDays': recurringDays,
       'recurringOdometer': recurringOdometer,
       'notificationEnabled': notificationEnabled ? 1 : 0,
@@ -196,6 +209,19 @@ class ReminderModel {
           : null,
       dueOdometer: map['dueOdometer'] as int?,
       isRecurring: map['isRecurring'] == 1,
+      recurrenceType: map['recurrenceType'] != null
+          ? RecurrenceType.values.firstWhere(
+              (e) => e.name == map['recurrenceType'],
+              orElse: () => RecurrenceType.interval)
+          : null,
+      recurrenceWeekdays: map['recurrenceWeekdays'] != null
+          ? (map['recurrenceWeekdays'] as String)
+              .split(',')
+              .where((e) => e.isNotEmpty)
+              .map((e) => int.parse(e))
+              .toList()
+          : null,
+      recurrenceMonthDay: map['recurrenceMonthDay'] as int?,
       recurringDays: map['recurringDays'] as int?,
       recurringOdometer: map['recurringOdometer'] as int?,
       notificationEnabled: map['notificationEnabled'] == 1,
@@ -230,6 +256,9 @@ class ReminderModel {
       'dueDate': dueDate?.millisecondsSinceEpoch,
       'dueOdometer': dueOdometer,
       'isRecurring': isRecurring,
+      'recurrenceType': recurrenceType?.name,
+      'recurrenceWeekdays': recurrenceWeekdays,
+      'recurrenceMonthDay': recurrenceMonthDay,
       'recurringDays': recurringDays,
       'recurringOdometer': recurringOdometer,
       'notificationEnabled': notificationEnabled,
@@ -257,6 +286,15 @@ class ReminderModel {
           : null,
       dueOdometer: data['dueOdometer'] as int?,
       isRecurring: data['isRecurring'] as bool? ?? false,
+      recurrenceType: data['recurrenceType'] != null
+          ? RecurrenceType.values.firstWhere(
+              (e) => e.name == data['recurrenceType'],
+              orElse: () => RecurrenceType.interval)
+          : null,
+      recurrenceWeekdays: data['recurrenceWeekdays'] != null
+          ? List<int>.from(data['recurrenceWeekdays'])
+          : null,
+      recurrenceMonthDay: data['recurrenceMonthDay'] as int?,
       recurringDays: data['recurringDays'] as int?,
       recurringOdometer: data['recurringOdometer'] as int?,
       notificationEnabled: data['notificationEnabled'] as bool? ?? true,
@@ -286,6 +324,9 @@ class ReminderModel {
     DateTime? dueDate,
     int? dueOdometer,
     bool? isRecurring,
+    RecurrenceType? recurrenceType,
+    List<int>? recurrenceWeekdays,
+    int? recurrenceMonthDay,
     int? recurringDays,
     int? recurringOdometer,
     bool? notificationEnabled,
@@ -310,6 +351,9 @@ class ReminderModel {
       dueDate: dueDate ?? this.dueDate,
       dueOdometer: dueOdometer ?? this.dueOdometer,
       isRecurring: isRecurring ?? this.isRecurring,
+      recurrenceType: recurrenceType ?? this.recurrenceType,
+      recurrenceWeekdays: recurrenceWeekdays ?? this.recurrenceWeekdays,
+      recurrenceMonthDay: recurrenceMonthDay ?? this.recurrenceMonthDay,
       recurringDays: recurringDays ?? this.recurringDays,
       recurringOdometer: recurringOdometer ?? this.recurringOdometer,
       notificationEnabled: notificationEnabled ?? this.notificationEnabled,

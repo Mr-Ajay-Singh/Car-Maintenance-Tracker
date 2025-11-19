@@ -26,6 +26,9 @@ class ReminderService {
       reminder.dueDate?.toIso8601String(),
       reminder.dueOdometer,
       reminder.isRecurring ? 1 : 0,
+      reminder.recurrenceType?.name,
+      reminder.recurrenceWeekdays?.join(','),
+      reminder.recurrenceMonthDay,
       reminder.recurringDays,
       reminder.recurringOdometer,
       reminder.notificationEnabled ? 1 : 0,
@@ -121,6 +124,9 @@ class ReminderService {
       updatedReminder.dueDate?.toIso8601String(),
       updatedReminder.dueOdometer,
       updatedReminder.isRecurring ? 1 : 0,
+      updatedReminder.recurrenceType?.name,
+      updatedReminder.recurrenceWeekdays?.join(','),
+      updatedReminder.recurrenceMonthDay,
       updatedReminder.recurringDays,
       updatedReminder.recurringOdometer,
       updatedReminder.notificationEnabled ? 1 : 0,
@@ -343,9 +349,50 @@ class ReminderService {
     int? newDueOdometer;
 
     // Calculate new due date
-    if (completed.dueDate != null && completed.recurringDays != null) {
-      newDueDate =
-          completed.dueDate!.add(Duration(days: completed.recurringDays!));
+    if (completed.dueDate != null) {
+      if (completed.recurrenceType == RecurrenceType.daily) {
+        newDueDate = completed.dueDate!.add(const Duration(days: 1));
+      } else if (completed.recurrenceType == RecurrenceType.weekly &&
+          completed.recurrenceWeekdays != null &&
+          completed.recurrenceWeekdays!.isNotEmpty) {
+        // Find next weekday
+        final currentWeekday = completed.dueDate!.weekday;
+        final sortedDays = List<int>.from(completed.recurrenceWeekdays!)..sort();
+        
+        int? nextDay;
+        for (final day in sortedDays) {
+          if (day > currentWeekday) {
+            nextDay = day;
+            break;
+          }
+        }
+        
+        if (nextDay != null) {
+          // Same week
+          newDueDate = completed.dueDate!.add(Duration(days: nextDay - currentWeekday));
+        } else {
+          // Next week (first available day)
+          nextDay = sortedDays.first;
+          newDueDate = completed.dueDate!.add(Duration(days: 7 - currentWeekday + nextDay));
+        }
+      } else if (completed.recurrenceType == RecurrenceType.monthly &&
+          completed.recurrenceMonthDay != null) {
+        // Next month
+        var nextMonth = DateTime(
+          completed.dueDate!.year,
+          completed.dueDate!.month + 1,
+          completed.recurrenceMonthDay!,
+        );
+        
+        // Handle invalid dates (e.g. Feb 30)
+        while (nextMonth.month > completed.dueDate!.month + 1) {
+           nextMonth = nextMonth.subtract(const Duration(days: 1));
+        }
+        newDueDate = nextMonth;
+      } else if (completed.recurringDays != null) {
+        // Interval (legacy or explicit)
+        newDueDate = completed.dueDate!.add(Duration(days: completed.recurringDays!));
+      }
     }
 
     // Calculate new due odometer

@@ -23,7 +23,7 @@ class DatabaseHelper {
     String path = join(await getDatabasesPath(), 'car_maintenance_tracker.db');
     return await openDatabase(
       path,
-      version: 1,
+      version: 2,
       onCreate: _onCreate,
       onUpgrade: _onUpgrade,
     );
@@ -128,6 +128,9 @@ class DatabaseHelper {
         dueDate TEXT,
         dueOdometer INTEGER,
         isRecurring INTEGER NOT NULL DEFAULT 0,
+        recurrenceType TEXT,
+        recurrenceWeekdays TEXT,
+        recurrenceMonthDay INTEGER,
         recurringDays INTEGER,
         recurringOdometer INTEGER,
         notificationEnabled INTEGER NOT NULL DEFAULT 1,
@@ -182,8 +185,12 @@ class DatabaseHelper {
   }
 
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
-    // Handle database schema upgrades
-    // For now, just recreate everything if needed
+    if (oldVersion < 2) {
+      // Add new columns for enhanced recurrence
+      await db.execute('ALTER TABLE reminders ADD COLUMN recurrenceType TEXT');
+      await db.execute('ALTER TABLE reminders ADD COLUMN recurrenceWeekdays TEXT');
+      await db.execute('ALTER TABLE reminders ADD COLUMN recurrenceMonthDay INTEGER');
+    }
   }
 
   // Utility methods
