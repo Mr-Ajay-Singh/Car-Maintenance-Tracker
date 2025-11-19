@@ -78,14 +78,21 @@ class _VehicleDetailPageState extends State<VehicleDetailPage> {
       await _vehicleService.deleteVehicle(widget.vehicleId);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Vehicle deleted successfully')),
+          const SnackBar(
+            content: Text('Vehicle deleted successfully'),
+            behavior: SnackBarBehavior.floating,
+          ),
         );
-        context.go('/vehicles');
+        context.pop(); // Return to list
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to delete vehicle: $e')),
+          SnackBar(
+            content: Text('Failed to delete vehicle: $e'),
+            behavior: SnackBarBehavior.floating,
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
         );
       }
     }
@@ -93,269 +100,307 @@ class _VehicleDetailPageState extends State<VehicleDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Vehicle Details'),
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        foregroundColor: Theme.of(context).colorScheme.onPrimary,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.delete),
-            onPressed: _deleteVehicle,
-          ),
-        ],
-      ),
-      body: _buildBody(),
-    );
-  }
+    final colorScheme = Theme.of(context).colorScheme;
 
-  Widget _buildBody() {
     if (_isLoading) {
-      return const Center(child: CircularProgressIndicator());
+      return Scaffold(
+        appBar: AppBar(),
+        body: const Center(child: CircularProgressIndicator()),
+      );
     }
 
-    if (_error != null) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.error_outline,
-              size: 64,
-              color: Theme.of(context).colorScheme.error,
-            ),
-            const SizedBox(height: 16),
-            Text(
-              _error!,
-              style: Theme.of(context).textTheme.bodyLarge,
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 16),
-            ElevatedButton.icon(
-              onPressed: _loadVehicle,
-              icon: const Icon(Icons.refresh),
-              label: const Text('Retry'),
-            ),
-          ],
+    if (_error != null || _vehicle == null) {
+      return Scaffold(
+        appBar: AppBar(),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.error_outline, size: 48, color: colorScheme.error),
+              const SizedBox(height: 16),
+              Text(_error ?? 'Vehicle not found'),
+              const SizedBox(height: 16),
+              FilledButton.tonal(
+                onPressed: _loadVehicle,
+                child: const Text('Retry'),
+              ),
+            ],
+          ),
         ),
       );
     }
 
-    if (_vehicle == null) {
-      return const Center(child: Text('Vehicle not found'));
-    }
-
-    return ListView(
-      padding: const EdgeInsets.all(16),
-      children: [
-        // Vehicle header card
-        Card(
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              children: [
-                Icon(
-                  Icons.directions_car,
-                  size: 64,
-                  color: Theme.of(context).colorScheme.primary,
+    return Scaffold(
+      backgroundColor: colorScheme.surface,
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar.large(
+            title: Text(_vehicle!.model),
+            centerTitle: false,
+            backgroundColor: colorScheme.surface,
+            surfaceTintColor: Colors.transparent,
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.delete_outline),
+                onPressed: _deleteVehicle,
+                tooltip: 'Delete Vehicle',
+              ),
+            ],
+          ),
+          SliverPadding(
+            padding: const EdgeInsets.all(24),
+            sliver: SliverList(
+              delegate: SliverChildListDelegate([
+                // Header Info
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: colorScheme.primaryContainer,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Icon(
+                        Icons.directions_car_filled_rounded,
+                        size: 40,
+                        color: colorScheme.onPrimaryContainer,
+                      ),
+                    ),
+                    const SizedBox(width: 20),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '${_vehicle!.year} ${_vehicle!.make}',
+                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                  color: colorScheme.onSurfaceVariant,
+                                ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            '${_vehicle!.currentOdometer} km',
+                            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: colorScheme.primary,
+                                ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 32),
+
+                // Quick Actions
                 Text(
-                  '${_vehicle!.year} ${_vehicle!.make} ${_vehicle!.model}',
-                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  'Quick Actions',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
-                  textAlign: TextAlign.center,
                 ),
-                const SizedBox(height: 8),
-                Text(
-                  '${_vehicle!.currentOdometer} km',
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        color: Theme.of(context).colorScheme.primary,
+                const SizedBox(height: 16),
+                Row(
+                  children: [
+                    Expanded(
+                      child: _ActionCard(
+                        icon: Icons.build_rounded,
+                        label: 'Service',
+                        color: colorScheme.primary,
+                        onTap: () => context.go('/service/add?vehicleId=${widget.vehicleId}'),
                       ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: _ActionCard(
+                        icon: Icons.local_gas_station_rounded,
+                        label: 'Fuel',
+                        color: colorScheme.secondary,
+                        onTap: () => context.go('/fuel/add?vehicleId=${widget.vehicleId}'),
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          ),
-        ),
-        const SizedBox(height: 16),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    Expanded(
+                      child: _ActionCard(
+                        icon: Icons.notifications_rounded,
+                        label: 'Reminder',
+                        color: colorScheme.tertiary,
+                        onTap: () => context.go('/reminders/add?vehicleId=${widget.vehicleId}'),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: _ActionCard(
+                        icon: Icons.receipt_long_rounded,
+                        label: 'Expense',
+                        color: colorScheme.error,
+                        onTap: () => context.go('/expenses/add?vehicleId=${widget.vehicleId}'),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 32),
 
-        // Vehicle details card
-        Card(
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+                // Details Section
                 Text(
-                  'Vehicle Information',
+                  'Vehicle Details',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
                 ),
                 const SizedBox(height: 16),
-                _DetailRow(label: 'Make', value: _vehicle!.make),
-                _DetailRow(label: 'Model', value: _vehicle!.model),
-                _DetailRow(label: 'Year', value: _vehicle!.year.toString()),
-                if (_vehicle!.vin != null && _vehicle!.vin!.isNotEmpty)
-                  _DetailRow(label: 'VIN', value: _vehicle!.vin!),
-                if (_vehicle!.licensePlate != null && _vehicle!.licensePlate!.isNotEmpty)
-                  _DetailRow(label: 'License Plate', value: _vehicle!.licensePlate!),
-                _DetailRow(label: 'Fuel Type', value: _vehicle!.fuelType),
-                _DetailRow(
-                  label: 'Odometer',
-                  value: '${_vehicle!.currentOdometer} km',
+                Container(
+                  decoration: BoxDecoration(
+                    color: colorScheme.surfaceContainerHighest.withOpacity(0.3),
+                    borderRadius: BorderRadius.circular(24),
+                    border: Border.all(color: colorScheme.outlineVariant.withOpacity(0.5)),
+                  ),
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    children: [
+                      _DetailRow(
+                        icon: Icons.branding_watermark_rounded,
+                        label: 'Make',
+                        value: _vehicle!.make,
+                      ),
+                      _DetailRow(
+                        icon: Icons.model_training_rounded,
+                        label: 'Model',
+                        value: _vehicle!.model,
+                      ),
+                      _DetailRow(
+                        icon: Icons.calendar_today_rounded,
+                        label: 'Year',
+                        value: _vehicle!.year.toString(),
+                      ),
+                      _DetailRow(
+                        icon: Icons.local_gas_station_rounded,
+                        label: 'Fuel Type',
+                        value: _vehicle!.fuelType,
+                      ),
+                      if (_vehicle!.vin != null && _vehicle!.vin!.isNotEmpty)
+                        _DetailRow(
+                          icon: Icons.fingerprint_rounded,
+                          label: 'VIN',
+                          value: _vehicle!.vin!,
+                        ),
+                      if (_vehicle!.licensePlate != null && _vehicle!.licensePlate!.isNotEmpty)
+                        _DetailRow(
+                          icon: Icons.tag_rounded,
+                          label: 'License Plate',
+                          value: _vehicle!.licensePlate!,
+                        ),
+                    ],
+                  ),
                 ),
-              ],
+              ]),
             ),
           ),
-        ),
-        const SizedBox(height: 16),
+        ],
+      ),
+    );
+  }
+}
 
-        // Quick actions
-        Text(
-          'Quick Actions',
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
+class _ActionCard extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final Color color;
+  final VoidCallback onTap;
+
+  const _ActionCard({
+    required this.icon,
+    required this.label,
+    required this.color,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    
+    return Card(
+      elevation: 0,
+      color: color.withOpacity(0.1),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+        side: BorderSide(color: color.withOpacity(0.2)),
+      ),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(20),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+          child: Column(
+            children: [
+              Icon(icon, size: 32, color: color),
+              const SizedBox(height: 8),
+              Text(
+                label,
+                style: TextStyle(
+                  color: colorScheme.onSurface,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
+            ],
+          ),
         ),
-        const SizedBox(height: 8),
-        Row(
-          children: [
-            Expanded(
-              child: Card(
-                child: InkWell(
-                  onTap: () => context.go('/service/add?vehicleId=${widget.vehicleId}'),
-                  borderRadius: BorderRadius.circular(12),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      children: [
-                        Icon(
-                          Icons.build,
-                          size: 32,
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
-                        const SizedBox(height: 8),
-                        const Text('Add Service'),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Card(
-                child: InkWell(
-                  onTap: () => context.go('/fuel/add?vehicleId=${widget.vehicleId}'),
-                  borderRadius: BorderRadius.circular(12),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      children: [
-                        Icon(
-                          Icons.local_gas_station,
-                          size: 32,
-                          color: Theme.of(context).colorScheme.secondary,
-                        ),
-                        const SizedBox(height: 8),
-                        const Text('Add Fuel'),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 8),
-        Row(
-          children: [
-            Expanded(
-              child: Card(
-                child: InkWell(
-                  onTap: () => context.go('/reminders/add?vehicleId=${widget.vehicleId}'),
-                  borderRadius: BorderRadius.circular(12),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      children: [
-                        Icon(
-                          Icons.notifications,
-                          size: 32,
-                          color: Theme.of(context).colorScheme.tertiary,
-                        ),
-                        const SizedBox(height: 8),
-                        const Text('Add Reminder'),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Card(
-                child: InkWell(
-                  onTap: () => context.go('/expenses/add?vehicleId=${widget.vehicleId}'),
-                  borderRadius: BorderRadius.circular(12),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      children: [
-                        Icon(
-                          Icons.receipt,
-                          size: 32,
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
-                        const SizedBox(height: 8),
-                        const Text('Add Expense'),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ],
+      ),
     );
   }
 }
 
 class _DetailRow extends StatelessWidget {
+  final IconData icon;
   final String label;
   final String value;
 
   const _DetailRow({
+    required this.icon,
     required this.label,
     required this.value,
   });
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.only(bottom: 16),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(
-            width: 120,
-            child: Text(
-              label,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: colorScheme.surface,
+              borderRadius: BorderRadius.circular(10),
             ),
+            child: Icon(icon, size: 20, color: colorScheme.primary),
           ),
-          Expanded(
-            child: Text(
-              value,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.w500,
-                  ),
-            ),
+          const SizedBox(width: 16),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                label,
+                style: TextStyle(
+                  color: colorScheme.onSurfaceVariant,
+                  fontSize: 12,
+                ),
+              ),
+              Text(
+                value,
+                style: TextStyle(
+                  color: colorScheme.onSurface,
+                  fontWeight: FontWeight.w500,
+                  fontSize: 16,
+                ),
+              ),
+            ],
           ),
         ],
       ),
