@@ -14,30 +14,34 @@ class FuelSummaryWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      elevation: 3,
+      elevation: 2,
+      shadowColor: Theme.of(context).colorScheme.shadow.withOpacity(0.1),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(24),
+        side: BorderSide(
+          color: Theme.of(context).colorScheme.outlineVariant.withOpacity(0.5),
+        ),
       ),
       child: InkWell(
-        onTap: () => context.go('/fuel'),
-        borderRadius: BorderRadius.circular(16),
+        onTap: () => context.push('/fuel'),
+        borderRadius: BorderRadius.circular(24),
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
                 children: [
                   Container(
-                    padding: const EdgeInsets.all(8),
+                    padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
                       color: Theme.of(context).colorScheme.secondaryContainer,
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(12),
                     ),
                     child: Icon(
-                      Icons.local_gas_station,
+                      Icons.local_gas_station_rounded,
                       color: Theme.of(context).colorScheme.onSecondaryContainer,
-                      size: 20,
+                      size: 24,
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -51,26 +55,26 @@ class FuelSummaryWidget extends StatelessWidget {
                   ),
                 ],
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 20),
               if (summary.averageMpg > 0)
                 _StatRow(
                   label: 'Average',
                   value: '${summary.averageMpg.toStringAsFixed(1)} km/L',
                 ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 12),
               _StatRow(
                 label: 'Total Cost',
                 value: '\$${summary.totalCost.toStringAsFixed(2)}',
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 12),
               _StatRow(
                 label: 'Total Volume',
                 value: '${summary.totalVolume.toStringAsFixed(1)} L',
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 16),
               Text(
                 summary.period,
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                style: Theme.of(context).textTheme.labelMedium?.copyWith(
                       color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
               ),

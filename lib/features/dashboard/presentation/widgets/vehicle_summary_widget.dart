@@ -16,33 +16,37 @@ class VehicleSummaryWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
-      elevation: 3,
+      elevation: 2,
+      shadowColor: Theme.of(context).colorScheme.shadow.withOpacity(0.1),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(24),
+        side: BorderSide(
+          color: Theme.of(context).colorScheme.outlineVariant.withOpacity(0.5),
+        ),
       ),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(24),
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
                 children: [
                   Container(
-                    padding: const EdgeInsets.all(12),
+                    padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
                       color: Theme.of(context).colorScheme.primaryContainer,
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(16),
                     ),
                     child: Icon(
-                      Icons.directions_car,
+                      Icons.directions_car_filled,
                       color: Theme.of(context).colorScheme.onPrimaryContainer,
-                      size: 28,
+                      size: 32,
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: 16),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -50,39 +54,59 @@ class VehicleSummaryWidget extends StatelessWidget {
                         Text(
                           vehicle.displayName,
                           style:
-                              Theme.of(context).textTheme.titleMedium?.copyWith(
+                              Theme.of(context).textTheme.titleLarge?.copyWith(
                                     fontWeight: FontWeight.bold,
                                   ),
                         ),
-                        Text(
-                          '${vehicle.currentOdometer.toStringAsFixed(0)} km',
-                          style:
-                              Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .onSurfaceVariant,
-                                  ),
+                        const SizedBox(height: 4),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Theme.of(context)
+                                .colorScheme
+                                .surfaceContainerHighest,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(
+                            '${vehicle.currentOdometer.toStringAsFixed(0)} km',
+                            style: Theme.of(context)
+                                .textTheme
+                                .labelMedium
+                                ?.copyWith(
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onSurfaceVariant,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                          ),
                         ),
                       ],
                     ),
                   ),
                   Icon(
-                    Icons.chevron_right,
+                    Icons.arrow_forward_ios_rounded,
+                    size: 20,
                     color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                 ],
               ),
               if (vehicle.lastServiceDate != null ||
                   vehicle.nextServiceDue != null) ...[
+                const SizedBox(height: 20),
+                Divider(
+                  height: 1,
+                  color: Theme.of(context).colorScheme.outlineVariant,
+                ),
                 const SizedBox(height: 16),
-                const Divider(height: 1),
-                const SizedBox(height: 12),
                 Row(
                   children: [
                     if (vehicle.lastServiceDate != null)
                       Expanded(
                         child: _InfoChip(
-                          icon: Icons.build,
+                          icon: Icons.history,
                           label: 'Last Service',
                           value: _formatDate(vehicle.lastServiceDate!),
                         ),
@@ -93,7 +117,7 @@ class VehicleSummaryWidget extends StatelessWidget {
                     if (vehicle.daysUntilNextService != null)
                       Expanded(
                         child: _InfoChip(
-                          icon: Icons.calendar_today,
+                          icon: Icons.event_repeat,
                           label: 'Next Service',
                           value: _formatDaysRemaining(
                               vehicle.daysUntilNextService!),

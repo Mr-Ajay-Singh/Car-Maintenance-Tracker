@@ -62,128 +62,144 @@ class _DashboardPageState extends State<DashboardPage> {
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return const Center(child: CircularProgressIndicator());
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
     }
 
     if (_error != null) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.error_outline,
-              size: 64,
-              color: Theme.of(context).colorScheme.error,
-            ),
-            const SizedBox(height: 16),
-            Text(
-              _error!,
-              style: Theme.of(context).textTheme.bodyLarge,
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 16),
-            ElevatedButton.icon(
-              onPressed: _loadDashboard,
-              icon: const Icon(Icons.refresh),
-              label: const Text('Retry'),
-            ),
-          ],
+      return Scaffold(
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.error_outline,
+                size: 64,
+                color: Theme.of(context).colorScheme.error,
+              ),
+              const SizedBox(height: 16),
+              Text(
+                _error!,
+                style: Theme.of(context).textTheme.bodyLarge,
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton.icon(
+                onPressed: _loadDashboard,
+                icon: const Icon(Icons.refresh),
+                label: const Text('Retry'),
+              ),
+            ],
+          ),
         ),
       );
     }
 
     if (_summary == null) {
-      return const Center(child: Text('No data available'));
+      return const Scaffold(
+        body: Center(child: Text('No data available')),
+      );
     }
 
     // If no vehicles, show welcome screen
     if (_summary!.vehicles.isEmpty) {
-      return _buildWelcomeScreen();
+      return Scaffold(body: _buildWelcomeScreen());
     }
 
-    return RefreshIndicator(
-      onRefresh: _loadDashboard,
-      child: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          // Vehicles summary
-          Text(
-            'My Vehicles',
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-          ),
-          const SizedBox(height: 8),
-          ..._summary!.vehicles.map((vehicle) => VehicleSummaryWidget(
-                vehicle: vehicle,
-                onTap: () => context.go('/vehicles/${vehicle.vehicleId}'),
-              )),
-          const SizedBox(height: 24),
+    return Scaffold(
+      body: RefreshIndicator(
+        onRefresh: _loadDashboard,
+        child: CustomScrollView(
+          slivers: [
+            SliverSafeArea(
+              sliver: SliverPadding(
+                padding: const EdgeInsets.all(16),
+                sliver: SliverList(
+                  delegate: SliverChildListDelegate([
+                    // Vehicles summary
+                  Text(
+                    'My Vehicles',
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                  ),
+                  const SizedBox(height: 12),
+                  ..._summary!.vehicles.map((vehicle) => VehicleSummaryWidget(
+                        vehicle: vehicle,
+                        onTap: () => context.go('/vehicles/${vehicle.vehicleId}'),
+                      )),
+                  const SizedBox(height: 24),
 
-          // Upcoming reminders
-          if (_summary!.upcomingReminders.isNotEmpty) ...[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Upcoming Reminders',
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                ),
-                TextButton(
-                  onPressed: () => context.go('/reminders'),
-                  child: const Text('View All'),
-                ),
-              ],
+                  // Upcoming reminders
+                  if (_summary!.upcomingReminders.isNotEmpty) ...[
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Upcoming Reminders',
+                          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
+                        ),
+                        TextButton(
+                          onPressed: () => context.go('/reminders'),
+                          child: const Text('View All'),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    UpcomingRemindersWidget(reminders: _summary!.upcomingReminders),
+                    const SizedBox(height: 24),
+                  ],
+
+                  // Fuel and Expense summary cards
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (_summary!.fuelSummary != null)
+                        Expanded(
+                          child: FuelSummaryWidget(summary: _summary!.fuelSummary!),
+                        ),
+                      if (_summary!.fuelSummary != null &&
+                          _summary!.expenseSummary != null)
+                        const SizedBox(width: 16),
+                      if (_summary!.expenseSummary != null)
+                        Expanded(
+                          child:
+                              ExpenseSummaryWidget(summary: _summary!.expenseSummary!),
+                        ),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+
+                  // Recent activity
+                  if (_summary!.recentActivities.isNotEmpty) ...[
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Recent Activity',
+                          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
+                        ),
+                        TextButton(
+                          onPressed: () => context.go('/service'),
+                          child: const Text('View All'),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    RecentActivityWidget(activities: _summary!.recentActivities),
+                  ],
+                  const SizedBox(height: 32),
+                ]),
+              ),
             ),
-            const SizedBox(height: 8),
-            UpcomingRemindersWidget(reminders: _summary!.upcomingReminders),
-            const SizedBox(height: 24),
-          ],
-
-          // Fuel and Expense summary cards
-          Row(
-            children: [
-              if (_summary!.fuelSummary != null)
-                Expanded(
-                  child: FuelSummaryWidget(summary: _summary!.fuelSummary!),
-                ),
-              if (_summary!.fuelSummary != null &&
-                  _summary!.expenseSummary != null)
-                const SizedBox(width: 16),
-              if (_summary!.expenseSummary != null)
-                Expanded(
-                  child:
-                      ExpenseSummaryWidget(summary: _summary!.expenseSummary!),
-                ),
-            ],
           ),
-          const SizedBox(height: 24),
-
-          // Recent activity
-          if (_summary!.recentActivities.isNotEmpty) ...[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Recent Activity',
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                ),
-                TextButton(
-                  onPressed: () => context.go('/service'),
-                  child: const Text('View All'),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            RecentActivityWidget(activities: _summary!.recentActivities),
-          ],
-
-          const SizedBox(height: 16),
         ],
+        ),
       ),
     );
   }

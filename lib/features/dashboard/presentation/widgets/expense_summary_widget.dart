@@ -14,30 +14,34 @@ class ExpenseSummaryWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      elevation: 3,
+      elevation: 2,
+      shadowColor: Theme.of(context).colorScheme.shadow.withOpacity(0.1),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(24),
+        side: BorderSide(
+          color: Theme.of(context).colorScheme.outlineVariant.withOpacity(0.5),
+        ),
       ),
       child: InkWell(
-        onTap: () => context.go('/expenses'),
-        borderRadius: BorderRadius.circular(16),
+        onTap: () => context.push('/expenses'),
+        borderRadius: BorderRadius.circular(24),
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
                 children: [
                   Container(
-                    padding: const EdgeInsets.all(8),
+                    padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
                       color: Theme.of(context).colorScheme.tertiaryContainer,
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(12),
                     ),
                     child: Icon(
-                      Icons.receipt_long,
+                      Icons.receipt_long_rounded,
                       color: Theme.of(context).colorScheme.onTertiaryContainer,
-                      size: 20,
+                      size: 24,
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -51,7 +55,7 @@ class ExpenseSummaryWidget extends StatelessWidget {
                   ),
                 ],
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 20),
               Text(
                 '\$${summary.totalExpenses.toStringAsFixed(2)}',
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
@@ -59,31 +63,31 @@ class ExpenseSummaryWidget extends StatelessWidget {
                       color: Theme.of(context).colorScheme.primary,
                     ),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 16),
               _ExpenseBar(
                 label: 'Service',
                 amount: summary.serviceExpenses,
                 total: summary.totalExpenses,
                 color: Theme.of(context).colorScheme.primary,
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 12),
               _ExpenseBar(
                 label: 'Fuel',
                 amount: summary.fuelExpenses,
                 total: summary.totalExpenses,
                 color: Theme.of(context).colorScheme.secondary,
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 12),
               _ExpenseBar(
                 label: 'Other',
                 amount: summary.otherExpenses,
                 total: summary.totalExpenses,
                 color: Theme.of(context).colorScheme.tertiary,
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 16),
               Text(
                 summary.period,
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                style: Theme.of(context).textTheme.labelMedium?.copyWith(
                       color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
               ),
