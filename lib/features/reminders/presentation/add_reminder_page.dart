@@ -35,6 +35,7 @@ class _AddReminderPageState extends State<AddReminderPage> {
   RecurrenceType _recurrenceType = RecurrenceType.interval;
   final List<int> _selectedWeekdays = [];
   bool _notificationEnabled = true;
+  int _notificationDaysBefore = 7;
 
   @override
   void dispose() {
@@ -136,6 +137,7 @@ class _AddReminderPageState extends State<AddReminderPage> {
         recurringDays: _isRecurring && _recurrenceType == RecurrenceType.interval ? int.tryParse(_recurringDaysController.text) : null,
         recurringOdometer: _isRecurring ? int.tryParse(_recurringOdometerController.text) : null,
         notificationEnabled: _notificationEnabled,
+        notificationDaysBefore: _notificationDaysBefore,
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
       );
@@ -320,6 +322,33 @@ class _AddReminderPageState extends State<AddReminderPage> {
                   onChanged: (val) => setState(() => _notificationEnabled = val),
                   activeThumbColor: colorScheme.primary,
                 ),
+                if (_notificationEnabled) ...[
+                  const SizedBox(height: 16),
+                  DropdownButtonFormField<int>(
+                    value: _notificationDaysBefore,
+                    decoration: InputDecoration(
+                      labelText: 'Remind me',
+                      filled: true,
+                      fillColor: colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide.none,
+                      ),
+                      prefixIcon: const Icon(Icons.notifications_active_rounded),
+                    ),
+                    items: const [
+                      DropdownMenuItem(value: 0, child: Text('On due date')),
+                      DropdownMenuItem(value: 1, child: Text('1 day before')),
+                      DropdownMenuItem(value: 3, child: Text('3 days before')),
+                      DropdownMenuItem(value: 7, child: Text('1 week before')),
+                      DropdownMenuItem(value: 14, child: Text('2 weeks before')),
+                      DropdownMenuItem(value: 30, child: Text('1 month before')),
+                    ],
+                    onChanged: (val) {
+                      if (val != null) setState(() => _notificationDaysBefore = val);
+                    },
+                  ),
+                ],
               ],
             ),
             const SizedBox(height: 24),

@@ -17,6 +17,7 @@ import '../../features/fuel/presentation/fuel_stats_page.dart';
 import '../../features/reminders/presentation/add_reminder_page.dart';
 import '../../features/reminders/presentation/reminder_detail_page.dart';
 import '../../features/reminders/presentation/reminders_page.dart';
+import '../../features/reminders/data/models/reminder_model.dart';
 import '../../features/service_log/presentation/add_service_page.dart';
 import '../../features/service_log/presentation/service_detail_page.dart';
 import '../../features/service_log/presentation/service_list_page.dart';
@@ -168,11 +169,11 @@ class AppRouter {
                 },
               ),
               GoRoute(
-                path: ':reminderId',
+                path: ':id',
                 name: 'reminder-detail',
                 builder: (context, state) {
-                  final reminderId = state.pathParameters['reminderId']!;
-                  return ReminderDetailPage(reminderId: reminderId);
+                  final reminder = state.extra as ReminderModel;
+                  return ReminderDetailPage(reminder: reminder);
                 },
               ),
             ],

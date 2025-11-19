@@ -240,10 +240,8 @@ class _RemindersPageState extends State<RemindersPage> {
           child: InkWell(
             borderRadius: BorderRadius.circular(24),
             onTap: () async {
-              // Navigate to detail page (not implemented yet, so just edit/view)
-              // For now, we can just show a bottom sheet or navigate to edit
-              // Assuming we might want a detail page later, but for now let's just refresh on return
-              // context.push('/reminders/${reminder.id}');
+              await context.push('/reminders/${reminder.id}', extra: reminder);
+              _load();
             },
             child: Padding(
               padding: const EdgeInsets.all(20),
