@@ -7,6 +7,7 @@ import '../../features/auth/service/auth_provider.dart';
 import '../../features/dashboard/presentation/dashboard_page.dart';
 import '../../features/data_export/pages/data_export_page.dart';
 import '../../features/expenses/presentation/add_expense_page.dart';
+import '../../features/expenses/presentation/expense_detail_page.dart';
 import '../../features/expenses/presentation/expense_stats_page.dart';
 import '../../features/expenses/presentation/expenses_page.dart';
 import '../../features/fuel/presentation/add_fuel_page.dart';
@@ -238,6 +239,14 @@ class AppRouter {
             builder: (context, state) {
               final vehicleId = state.uri.queryParameters['vehicleId'];
               return ExpenseStatsPage(vehicleId: vehicleId);
+            },
+          ),
+          GoRoute(
+            path: ':expenseId',
+            name: 'expense-detail',
+            builder: (context, state) {
+              final expenseId = state.pathParameters['expenseId']!;
+              return ExpenseDetailPage(expenseId: expenseId);
             },
           ),
         ],

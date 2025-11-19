@@ -173,7 +173,7 @@ class AppDrawer extends StatelessWidget {
             title: const Text('Expenses'),
             onTap: () {
               Navigator.pop(context);
-              context.go('/expenses');
+              context.push('/expenses');
             },
           ),
           const Divider(),
