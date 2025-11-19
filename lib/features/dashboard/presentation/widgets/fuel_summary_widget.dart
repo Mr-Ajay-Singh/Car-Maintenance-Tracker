@@ -5,10 +5,12 @@ import '../../data/models/dashboard_summary_model.dart';
 /// FuelSummaryWidget - Card showing fuel economy summary
 class FuelSummaryWidget extends StatelessWidget {
   final FuelEconomySummary summary;
+  final VoidCallback? onReturn;
 
   const FuelSummaryWidget({
     super.key,
     required this.summary,
+    this.onReturn,
   });
 
   @override
@@ -23,7 +25,10 @@ class FuelSummaryWidget extends StatelessWidget {
         ),
       ),
       child: InkWell(
-        onTap: () => context.push('/fuel'),
+        onTap: () async {
+          await context.push('/fuel');
+          onReturn?.call();
+        },
         borderRadius: BorderRadius.circular(24),
         child: Padding(
           padding: const EdgeInsets.all(20),

@@ -5,10 +5,12 @@ import '../../data/models/dashboard_summary_model.dart';
 /// ExpenseSummaryWidget - Card showing expense summary
 class ExpenseSummaryWidget extends StatelessWidget {
   final ExpenseSummary summary;
+  final VoidCallback? onReturn;
 
   const ExpenseSummaryWidget({
     super.key,
     required this.summary,
+    this.onReturn,
   });
 
   @override
@@ -23,7 +25,10 @@ class ExpenseSummaryWidget extends StatelessWidget {
         ),
       ),
       child: InkWell(
-        onTap: () => context.push('/expenses'),
+        onTap: () async {
+          await context.push('/expenses');
+          onReturn?.call();
+        },
         borderRadius: BorderRadius.circular(24),
         child: Padding(
           padding: const EdgeInsets.all(20),

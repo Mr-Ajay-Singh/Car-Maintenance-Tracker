@@ -159,15 +159,20 @@ class _DashboardPageState extends State<DashboardPage> {
                     children: [
                       if (_summary!.fuelSummary != null)
                         Expanded(
-                          child: FuelSummaryWidget(summary: _summary!.fuelSummary!),
+                          child: FuelSummaryWidget(
+                            summary: _summary!.fuelSummary!,
+                            onReturn: _loadDashboard,
+                          ),
                         ),
                       if (_summary!.fuelSummary != null &&
                           _summary!.expenseSummary != null)
                         const SizedBox(width: 16),
                       if (_summary!.expenseSummary != null)
                         Expanded(
-                          child:
-                              ExpenseSummaryWidget(summary: _summary!.expenseSummary!),
+                          child: ExpenseSummaryWidget(
+                            summary: _summary!.expenseSummary!,
+                            onReturn: _loadDashboard,
+                          ),
                         ),
                     ],
                   ),
