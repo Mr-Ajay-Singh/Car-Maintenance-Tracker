@@ -5,6 +5,8 @@ import 'package:uuid/uuid.dart';
 import '../../auth/service/auth_provider.dart';
 import '../data/models/fuel_entry_model.dart';
 import '../service/fuel_entry_service.dart';
+import '../../vehicle/service/vehicle_service.dart';
+import '../../vehicle/data/models/vehicle_model.dart';
 
 class AddFuelPage extends StatefulWidget {
   final String? vehicleId;
@@ -25,6 +27,22 @@ class _AddFuelPageState extends State<AddFuelPage> {
   bool _isSubmitting = false;
   bool _isFullTank = true;
   DateTime _selectedDate = DateTime.now();
+  
+  // Vehicle selection
+  List<dynamic> _vehicles = [];
+  String? _selectedVehicleId;
+  bool _isLoadingVehicles = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedVehicleId = widget.vehicleId;
+    if (_selectedVehicleId == null) {
+      _loadVehicles();
+    }
+  }
+
+
 
   @override
   void dispose() {
@@ -48,8 +66,35 @@ class _AddFuelPageState extends State<AddFuelPage> {
     }
   }
 
+  Future<void> _loadVehicles() async {
+    setState(() => _isLoadingVehicles = true);
+    try {
+      final userId = context.read<AuthProvider>().userId;
+      if (userId != null) {
+        final vehicleService = VehicleService();
+        final vehicles = await vehicleService.getAllVehicles(userId);
+        setState(() {
+          _vehicles = vehicles;
+          if (vehicles.isNotEmpty) {
+            _selectedVehicleId = vehicles.first.id;
+          }
+        });
+      }
+    } catch (e) {
+      debugPrint('Error loading vehicles: $e');
+    } finally {
+      if (mounted) setState(() => _isLoadingVehicles = false);
+    }
+  }
+
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
+    if (_selectedVehicleId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please select a vehicle')),
+      );
+      return;
+    }
     
     setState(() => _isSubmitting = true);
     
@@ -62,7 +107,7 @@ class _AddFuelPageState extends State<AddFuelPage> {
 
       final entry = FuelEntryModel(
         id: const Uuid().v4(),
-        vehicleId: widget.vehicleId ?? '',
+        vehicleId: _selectedVehicleId!,
         userId: userId,
         date: _selectedDate,
         odometer: int.parse(_odometerController.text.trim()),
@@ -122,6 +167,41 @@ class _AddFuelPageState extends State<AddFuelPage> {
         child: ListView(
           padding: const EdgeInsets.fromLTRB(24, 24, 24, 100),
           children: [
+            if (widget.vehicleId == null) ...[
+              if (_isLoadingVehicles)
+                const Center(child: CircularProgressIndicator())
+              else if (_vehicles.isEmpty)
+                const Card(
+                  child: Padding(
+                    padding: EdgeInsets.all(16),
+                    child: Text('No vehicles found. Please add a vehicle first.'),
+                  ),
+                )
+              else
+                DropdownButtonFormField<String>(
+                  value: _selectedVehicleId,
+                  decoration: InputDecoration(
+                    labelText: 'Vehicle',
+                    filled: true,
+                    fillColor: colorScheme.surfaceContainerHighest.withOpacity(0.3),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide.none,
+                    ),
+                    prefixIcon: const Icon(Icons.directions_car_rounded),
+                  ),
+                  items: _vehicles.map<DropdownMenuItem<String>>((v) {
+                    return DropdownMenuItem<String>(
+                      value: v.id,
+                      child: Text('${v.year} ${v.make} ${v.model}'),
+                    );
+                  }).toList(),
+                  onChanged: (v) => setState(() => _selectedVehicleId = v),
+                  validator: (v) => v == null ? 'Required' : null,
+                ),
+              const SizedBox(height: 24),
+            ],
+
             Text(
               'Fuel Details',
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(

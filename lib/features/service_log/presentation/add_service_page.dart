@@ -142,7 +142,7 @@ class _AddServicePageState extends State<AddServicePage> {
                     labelText: 'Service Type',
                     hintText: 'e.g., Oil Change, Tire Rotation',
                     filled: true,
-                    fillColor: colorScheme.surfaceContainerHighest.withOpacity(0.3),
+                    fillColor: colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: BorderSide.none,
@@ -160,7 +160,7 @@ class _AddServicePageState extends State<AddServicePage> {
                     decoration: InputDecoration(
                       labelText: 'Date',
                       filled: true,
-                      fillColor: colorScheme.surfaceContainerHighest.withOpacity(0.3),
+                      fillColor: colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: BorderSide.none,
@@ -192,7 +192,7 @@ class _AddServicePageState extends State<AddServicePage> {
                           labelText: 'Odometer',
                           suffixText: 'km',
                           filled: true,
-                          fillColor: colorScheme.surfaceContainerHighest.withOpacity(0.3),
+                          fillColor: colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                             borderSide: BorderSide.none,
@@ -216,7 +216,7 @@ class _AddServicePageState extends State<AddServicePage> {
                           labelText: 'Total Cost',
                           prefixText: '\$',
                           filled: true,
-                          fillColor: colorScheme.surfaceContainerHighest.withOpacity(0.3),
+                          fillColor: colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                             borderSide: BorderSide.none,
@@ -241,7 +241,7 @@ class _AddServicePageState extends State<AddServicePage> {
                     labelText: 'Shop Name (Optional)',
                     hintText: 'e.g., Jiffy Lube',
                     filled: true,
-                    fillColor: colorScheme.surfaceContainerHighest.withOpacity(0.3),
+                    fillColor: colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: BorderSide.none,
@@ -266,7 +266,7 @@ class _AddServicePageState extends State<AddServicePage> {
                     labelText: 'Additional Notes',
                     alignLabelWithHint: true,
                     filled: true,
-                    fillColor: colorScheme.surfaceContainerHighest.withOpacity(0.3),
+                    fillColor: colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: BorderSide.none,

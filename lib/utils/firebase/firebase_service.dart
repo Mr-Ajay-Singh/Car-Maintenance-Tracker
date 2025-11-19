@@ -1,4 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 
 class FirebaseService {
@@ -63,16 +65,16 @@ class FirebaseService {
       // Fetch and activate
       await _remoteConfig.fetchAndActivate();
     } catch (e) {
-      print('Error initializing Firebase: $e');
+      debugPrint('Error initializing Firebase: $e');
     }
   }
   
   String getHelloWorld() {
     try {
-      print("Hello World:- ${_remoteConfig.getString('hello_world')}");
+      debugPrint("Hello World:- ${_remoteConfig.getString('hello_world')}");
       return _remoteConfig.getString('hello_world');
     } catch (e) {
-      print('Error fetching hello_world: $e');
+      debugPrint('Error fetching hello_world: $e');
       return 'Error fetching value';
     }
   } 
@@ -81,7 +83,7 @@ class FirebaseService {
     try {
       return _remoteConfig.getString('dynamic_banner');
     } catch (e) {
-      print('Error fetching dynamic_banner: $e');
+      debugPrint('Error fetching dynamic_banner: $e');
       return '';
     }
   }

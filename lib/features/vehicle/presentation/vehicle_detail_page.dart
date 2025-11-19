@@ -255,9 +255,9 @@ class _VehicleDetailPageState extends State<VehicleDetailPage> {
                 const SizedBox(height: 16),
                 Container(
                   decoration: BoxDecoration(
-                    color: colorScheme.surfaceContainerHighest.withOpacity(0.3),
+                    color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
                     borderRadius: BorderRadius.circular(24),
-                    border: Border.all(color: colorScheme.outlineVariant.withOpacity(0.5)),
+                    border: Border.all(color: colorScheme.outlineVariant.withValues(alpha: 0.5)),
                   ),
                   padding: const EdgeInsets.all(20),
                   child: Column(
@@ -325,10 +325,10 @@ class _ActionCard extends StatelessWidget {
     
     return Card(
       elevation: 0,
-      color: color.withOpacity(0.1),
+      color: color.withValues(alpha: 0.1),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
-        side: BorderSide(color: color.withOpacity(0.2)),
+        side: BorderSide(color: color.withValues(alpha: 0.2)),
       ),
       child: InkWell(
         onTap: onTap,

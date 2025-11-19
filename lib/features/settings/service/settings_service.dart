@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:local_auth/local_auth.dart';
 import '../../../common/data/database_helper.dart';
@@ -215,10 +216,10 @@ class SettingsService {
       final user = FirebaseAuth.instance.currentUser;
       if (user != null) {
         await user.delete();
-        print('✅ Account deleted successfully');
+        debugPrint('✅ Account deleted successfully');
       }
     } catch (e) {
-      print('❌ Error deleting account: $e');
+      debugPrint('❌ Error deleting account: $e');
       rethrow;
     }
   }
@@ -236,7 +237,7 @@ class SettingsService {
       final remindersData = await DataExportService.getReminderData(userId, oneYearAgo, now);
       final expensesData = await DataExportService.getExpenseData(userId, oneYearAgo, now);
 
-      print('✅ Exported all data: ${vehiclesData.length} vehicles, ${serviceData.length} services, ${fuelData.length} fuel entries, ${remindersData.length} reminders, ${expensesData.length} expenses');
+      debugPrint('✅ Exported all data: ${vehiclesData.length} vehicles, ${serviceData.length} services, ${fuelData.length} fuel entries, ${remindersData.length} reminders, ${expensesData.length} expenses');
 
       return {
         'vehicles': vehiclesData,
@@ -247,7 +248,7 @@ class SettingsService {
         'exportDate': now.toIso8601String(),
       };
     } catch (e) {
-      print('❌ Error exporting data: $e');
+      debugPrint('❌ Error exporting data: $e');
       rethrow;
     }
   }
@@ -260,10 +261,10 @@ class SettingsService {
       final canCheckBiometrics = await localAuth.canCheckBiometrics;
       final isDeviceSupported = await localAuth.isDeviceSupported();
 
-      print('🔐 Biometrics available: $canCheckBiometrics, Device supported: $isDeviceSupported');
+      debugPrint('🔐 Biometrics available: $canCheckBiometrics, Device supported: $isDeviceSupported');
       return canCheckBiometrics && isDeviceSupported;
     } catch (e) {
-      print('❌ Error checking biometrics: $e');
+      debugPrint('❌ Error checking biometrics: $e');
       return false;
     }
   }
@@ -274,7 +275,7 @@ class SettingsService {
       final localAuth = LocalAuthentication();
       return await localAuth.getAvailableBiometrics();
     } catch (e) {
-      print('❌ Error getting available biometrics: $e');
+      debugPrint('❌ Error getting available biometrics: $e');
       return [];
     }
   }
@@ -287,7 +288,7 @@ class SettingsService {
       // Check if biometrics are available
       final isAvailable = await isBiometricsAvailable();
       if (!isAvailable) {
-        print('❌ Biometrics not available on this device');
+        debugPrint('❌ Biometrics not available on this device');
         return false;
       }
 
@@ -302,14 +303,14 @@ class SettingsService {
       );
 
       if (authenticated) {
-        print('✅ Biometric authentication successful');
+        debugPrint('✅ Biometric authentication successful');
       } else {
-        print('❌ Biometric authentication failed');
+        debugPrint('❌ Biometric authentication failed');
       }
 
       return authenticated;
     } catch (e) {
-      print('❌ Error during biometric authentication: $e');
+      debugPrint('❌ Error during biometric authentication: $e');
       return false;
     }
   }

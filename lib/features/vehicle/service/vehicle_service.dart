@@ -1,4 +1,5 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:flutter/foundation.dart';
 import '../../../common/data/database_helper.dart';
 import '../../../common/data/firestore_helper.dart';
 import '../data/models/vehicle_model.dart';
@@ -40,7 +41,7 @@ class VehicleService {
       try {
         await _syncVehicleToFirestore(vehicle);
       } catch (e) {
-        print('Sync failed: $e');
+        debugPrint('Sync failed: $e');
       }
     }
 
@@ -90,7 +91,7 @@ class VehicleService {
       try {
         await _syncVehicleToFirestore(updatedVehicle);
       } catch (e) {
-        print('Sync failed: $e');
+        debugPrint('Sync failed: $e');
       }
     }
   }
@@ -112,7 +113,7 @@ class VehicleService {
           await _syncVehicleToFirestore(vehicle);
         }
       } catch (e) {
-        print('Sync failed: $e');
+        debugPrint('Sync failed: $e');
       }
     }
   }
@@ -132,7 +133,7 @@ class VehicleService {
       try {
         await _deleteFromFirestore(vehicle.userId, vehicle.firebaseId!);
       } catch (e) {
-        print('Sync failed: $e');
+        debugPrint('Sync failed: $e');
       }
     }
   }
@@ -152,7 +153,7 @@ class VehicleService {
         final vehicle = VehicleModel.fromMap(row);
         await _syncVehicleToFirestore(vehicle);
       } catch (e) {
-        print('Failed to sync vehicle: $e');
+        debugPrint('Failed to sync vehicle: $e');
       }
     }
   }

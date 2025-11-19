@@ -1,4 +1,5 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:flutter/foundation.dart';
 import '../../../common/data/database_helper.dart';
 import '../../../common/data/firestore_helper.dart';
 import '../../vehicle/service/vehicle_service.dart';
@@ -43,7 +44,7 @@ class ServiceEntryService {
       try {
         await _syncEntryToFirestore(entry);
       } catch (e) {
-        print('Sync failed: $e');
+        debugPrint('Sync failed: $e');
       }
     }
 
@@ -144,7 +145,7 @@ class ServiceEntryService {
       try {
         await _syncEntryToFirestore(updatedEntry);
       } catch (e) {
-        print('Sync failed: $e');
+        debugPrint('Sync failed: $e');
       }
     }
   }
@@ -164,7 +165,7 @@ class ServiceEntryService {
       try {
         await _deleteFromFirestore(entry.userId, entry.firebaseId!);
       } catch (e) {
-        print('Sync failed: $e');
+        debugPrint('Sync failed: $e');
       }
     }
   }
@@ -184,7 +185,7 @@ class ServiceEntryService {
         final entry = ServiceEntryModel.fromMap(row);
         await _syncEntryToFirestore(entry);
       } catch (e) {
-        print('Failed to sync service entry: $e');
+        debugPrint('Failed to sync service entry: $e');
       }
     }
   }

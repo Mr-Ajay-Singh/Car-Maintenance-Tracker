@@ -1,4 +1,5 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:sqflite/sqflite.dart';
 import '../../../common/data/database_helper.dart';
 import '../../../common/data/firestore_helper.dart';
 import '../../vehicle/service/vehicle_service.dart';
@@ -13,26 +14,11 @@ class FuelEntryService {
   Future<String> addFuelEntry(FuelEntryModel entry) async {
     final db = await _dbHelper.database;
 
-    await db.rawInsert(FuelEntryModel.queryInsert, [
-      entry.id,
-      entry.vehicleId,
-      entry.userId,
-      entry.date.toIso8601String(),
-      entry.odometer,
-      entry.volume,
-      entry.cost,
-      entry.pricePerUnit,
-      entry.stationName,
-      entry.fuelType,
-      entry.isFullTank ? 1 : 0,
-      entry.notes,
-      entry.createdAt.toIso8601String(),
-      entry.updatedAt.toIso8601String(),
-      entry.isDeleted ? 1 : 0,
-      entry.isSynced ? 1 : 0,
-      entry.firebaseId,
-      entry.lastSyncedAt?.toIso8601String(),
-    ]);
+    await db.insert(
+      FuelEntryModel.tableName,
+      entry.toMap(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
 
     // Update vehicle odometer if this is newer
     await _updateVehicleOdometer(entry.vehicleId, entry.odometer);
@@ -181,19 +167,12 @@ class FuelEntryService {
       isSynced: false,
     );
 
-    await db.rawUpdate(FuelEntryModel.queryUpdate, [
-      updatedEntry.date.toIso8601String(),
-      updatedEntry.odometer,
-      updatedEntry.volume,
-      updatedEntry.cost,
-      updatedEntry.pricePerUnit,
-      updatedEntry.stationName,
-      updatedEntry.fuelType,
-      updatedEntry.isFullTank ? 1 : 0,
-      updatedEntry.notes,
-      updatedEntry.updatedAt.toIso8601String(),
-      updatedEntry.id,
-    ]);
+    await db.update(
+      FuelEntryModel.tableName,
+      updatedEntry.toMap(),
+      where: 'id = ?',
+      whereArgs: [updatedEntry.id],
+    );
 
     // Update vehicle odometer if needed
     await _updateVehicleOdometer(entry.vehicleId, entry.odometer);

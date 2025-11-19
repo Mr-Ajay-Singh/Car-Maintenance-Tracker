@@ -7,7 +7,7 @@ class ResponsiveWrapper extends StatelessWidget {
   const ResponsiveWrapper({super.key, required this.child});
 
   double getScaleFactor(double height) {
-    print("Height:- $height");
+    // print("Height:- $height");
     // if (height > 900) return 0.3;      // Very tall devices
     // if (height > 800) return 0.9;     // Tall devices
     // if (height > 700) return 0.5;      // Medium-tall devices
@@ -18,12 +18,12 @@ class ResponsiveWrapper extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
-    print("Media Query:- ${mediaQuery.size.height} ${mediaQuery.size.width}");
+    // print("Media Query:- ${mediaQuery.size.height} ${mediaQuery.size.width}");
     final scale = getScaleFactor(mediaQuery.size.height);
     
     return MediaQuery(
       data: mediaQuery.copyWith(
-        textScaleFactor: scale,
+        textScaler: TextScaler.linear(scale),
         size: Size(
           mediaQuery.size.width * scale,
           mediaQuery.size.height * scale,

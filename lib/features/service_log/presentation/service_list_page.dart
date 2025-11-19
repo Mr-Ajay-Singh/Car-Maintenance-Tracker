@@ -116,7 +116,7 @@ class _ServiceListPageState extends State<ServiceListPage> {
                       Icon(
                         Icons.build_circle_outlined,
                         size: 80,
-                        color: colorScheme.primary.withOpacity(0.5),
+                        color: colorScheme.primary.withValues(alpha: 0.5),
                       ),
                       const SizedBox(height: 16),
                       Text(
@@ -201,10 +201,10 @@ class _ServiceCard extends StatelessWidget {
         return Card(
           margin: const EdgeInsets.only(bottom: 16),
           elevation: 0,
-          color: colorScheme.surfaceContainerHighest.withOpacity(0.3),
+          color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(24),
-            side: BorderSide(color: colorScheme.outlineVariant.withOpacity(0.5)),
+            side: BorderSide(color: colorScheme.outlineVariant.withValues(alpha: 0.5)),
           ),
           child: InkWell(
             borderRadius: BorderRadius.circular(24),
@@ -272,7 +272,7 @@ class _ServiceCard extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 16),
-                  Divider(height: 1, color: colorScheme.outlineVariant.withOpacity(0.5)),
+                  Divider(height: 1, color: colorScheme.outlineVariant.withValues(alpha: 0.5)),
                   const SizedBox(height: 16),
                   Row(
                     children: [

@@ -1,5 +1,6 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 
 import '../../../common/data/database_helper.dart';
 import '../../../common/data/firestore_helper.dart';
@@ -36,21 +37,21 @@ class FirebaseSyncService {
     try {
       final user = FirebaseAuth.instance.currentUser;
       if (user == null) {
-        print('🔄 Sync skipped: No authenticated user');
+        debugPrint('🔄 Sync skipped: No authenticated user');
         return false;
       }
 
       final userId = user.uid;
-      print('🔄 Starting sync for user: $userId');
+      debugPrint('🔄 Starting sync for user: $userId');
 
       // Check if this is the first sync
       final isFirstSync = !(await SharedPreferencesHelper.getFirstSyncCompleted());
 
       if (isFirstSync) {
-        print('🔄 First sync detected - performing full sync');
+        debugPrint('🔄 First sync detected - performing full sync');
         await _performFirstSync(userId);
       } else {
-        print('🔄 Incremental sync - O(k) optimization');
+        debugPrint('🔄 Incremental sync - O(k) optimization');
         await _performIncrementalSync(userId);
       }
 
@@ -59,11 +60,11 @@ class FirebaseSyncService {
         DateTime.now().toIso8601String(),
       );
 
-      print('✅ Sync completed successfully');
+      debugPrint('✅ Sync completed successfully');
       return true;
     } catch (e, stackTrace) {
-      print('❌ Sync failed: $e');
-      print('Stack trace: $stackTrace');
+      debugPrint('❌ Sync failed: $e');
+      debugPrint('Stack trace: $stackTrace');
       return false;
     }
   }
@@ -163,7 +164,7 @@ class FirebaseSyncService {
 
   Future<void> _pushAllVehicles(Database db, String userId) async {
     final rows = await db.rawQuery(VehicleModel.queryGetAll, [userId]);
-    print('📤 Pushing ${rows.length} vehicles to Firestore');
+    debugPrint('📤 Pushing ${rows.length} vehicles to Firestore');
 
     for (final row in rows) {
       try {
@@ -176,14 +177,14 @@ class FirebaseSyncService {
           [firebaseId, DateTime.now().toIso8601String(), vehicle.id],
         );
       } catch (e) {
-        print('❌ Failed to push vehicle ${row['id']}: $e');
+        debugPrint('❌ Failed to push vehicle ${row['id']}: $e');
       }
     }
   }
 
   Future<void> _pushUnsyncedVehicles(Database db, String userId) async {
     final rows = await db.rawQuery(VehicleModel.queryGetUnsynced, [userId]);
-    print('📤 Pushing ${rows.length} unsynced vehicles to Firestore');
+    debugPrint('📤 Pushing ${rows.length} unsynced vehicles to Firestore');
 
     for (final row in rows) {
       try {
@@ -210,14 +211,14 @@ class FirebaseSyncService {
           );
         }
       } catch (e) {
-        print('❌ Failed to push vehicle ${row['id']}: $e');
+        debugPrint('❌ Failed to push vehicle ${row['id']}: $e');
       }
     }
   }
 
   Future<void> _pullVehicles(String userId, DateTime? lastSyncTime) async {
     final vehicles = await FirestoreHelper.pullVehicles(userId, lastSyncTime);
-    print('📥 Pulling ${vehicles.length} vehicles from Firestore');
+    debugPrint('📥 Pulling ${vehicles.length} vehicles from Firestore');
 
     final db = await _dbHelper.database;
     for (final data in vehicles) {
@@ -285,7 +286,7 @@ class FirebaseSyncService {
           );
         }
       } catch (e) {
-        print('❌ Failed to pull vehicle: $e');
+        debugPrint('❌ Failed to pull vehicle: $e');
       }
     }
   }
@@ -294,7 +295,7 @@ class FirebaseSyncService {
 
   Future<void> _pushAllServiceEntries(Database db, String userId) async {
     final rows = await db.rawQuery(ServiceEntryModel.queryGetAll, [userId]);
-    print('📤 Pushing ${rows.length} service entries to Firestore');
+    debugPrint('📤 Pushing ${rows.length} service entries to Firestore');
 
     for (final row in rows) {
       try {
@@ -306,14 +307,14 @@ class FirebaseSyncService {
           [firebaseId, DateTime.now().toIso8601String(), entry.id],
         );
       } catch (e) {
-        print('❌ Failed to push service entry ${row['id']}: $e');
+        debugPrint('❌ Failed to push service entry ${row['id']}: $e');
       }
     }
   }
 
   Future<void> _pushUnsyncedServiceEntries(Database db, String userId) async {
     final rows = await db.rawQuery(ServiceEntryModel.queryGetUnsynced, [userId]);
-    print('📤 Pushing ${rows.length} unsynced service entries to Firestore');
+    debugPrint('📤 Pushing ${rows.length} unsynced service entries to Firestore');
 
     for (final row in rows) {
       try {
@@ -333,14 +334,14 @@ class FirebaseSyncService {
           );
         }
       } catch (e) {
-        print('❌ Failed to push service entry ${row['id']}: $e');
+        debugPrint('❌ Failed to push service entry ${row['id']}: $e');
       }
     }
   }
 
   Future<void> _pullServiceEntries(String userId, DateTime? lastSyncTime) async {
     final entries = await FirestoreHelper.pullServiceEntries(userId, lastSyncTime);
-    print('📥 Pulling ${entries.length} service entries from Firestore');
+    debugPrint('📥 Pulling ${entries.length} service entries from Firestore');
 
     final db = await _dbHelper.database;
     for (final data in entries) {
@@ -404,7 +405,7 @@ class FirebaseSyncService {
           );
         }
       } catch (e) {
-        print('❌ Failed to pull service entry: $e');
+        debugPrint('❌ Failed to pull service entry: $e');
       }
     }
   }
@@ -413,7 +414,7 @@ class FirebaseSyncService {
 
   Future<void> _pushAllFuelEntries(Database db, String userId) async {
     final rows = await db.rawQuery(FuelEntryModel.queryGetAll, [userId]);
-    print('📤 Pushing ${rows.length} fuel entries to Firestore');
+    debugPrint('📤 Pushing ${rows.length} fuel entries to Firestore');
 
     for (final row in rows) {
       try {
@@ -425,14 +426,14 @@ class FirebaseSyncService {
           [firebaseId, DateTime.now().toIso8601String(), entry.id],
         );
       } catch (e) {
-        print('❌ Failed to push fuel entry ${row['id']}: $e');
+        debugPrint('❌ Failed to push fuel entry ${row['id']}: $e');
       }
     }
   }
 
   Future<void> _pushUnsyncedFuelEntries(Database db, String userId) async {
     final rows = await db.rawQuery(FuelEntryModel.queryGetUnsynced, [userId]);
-    print('📤 Pushing ${rows.length} unsynced fuel entries to Firestore');
+    debugPrint('📤 Pushing ${rows.length} unsynced fuel entries to Firestore');
 
     for (final row in rows) {
       try {
@@ -452,14 +453,14 @@ class FirebaseSyncService {
           );
         }
       } catch (e) {
-        print('❌ Failed to push fuel entry ${row['id']}: $e');
+        debugPrint('❌ Failed to push fuel entry ${row['id']}: $e');
       }
     }
   }
 
   Future<void> _pullFuelEntries(String userId, DateTime? lastSyncTime) async {
     final entries = await FirestoreHelper.pullFuelEntries(userId, lastSyncTime);
-    print('📥 Pulling ${entries.length} fuel entries from Firestore');
+    debugPrint('📥 Pulling ${entries.length} fuel entries from Firestore');
 
     final db = await _dbHelper.database;
     for (final data in entries) {
@@ -473,53 +474,21 @@ class FirebaseSyncService {
         );
 
         if (existing.isEmpty) {
-          await db.rawInsert(FuelEntryModel.queryInsert, [
-            entry.id,
-            entry.vehicleId,
-            entry.userId,
-            entry.date.toIso8601String(),
-            entry.odometer,
-            entry.volume,
-            entry.cost,
-            entry.pricePerUnit,
-            entry.isFullTank ? 1 : 0,
-            entry.stationName,
-            entry.notes,
-            entry.createdAt.toIso8601String(),
-            entry.updatedAt.toIso8601String(),
-            entry.isDeleted ? 1 : 0,
-            1, // isSynced
-            entry.firebaseId,
-            DateTime.now().toIso8601String(),
-          ]);
+          await db.insert(
+            FuelEntryModel.tableName,
+            entry.toMap(),
+            conflictAlgorithm: ConflictAlgorithm.replace,
+          );
         } else {
-          await db.rawUpdate(
-            '''UPDATE fuel_entries SET
-               vehicleId = ?, date = ?, odometer = ?, volume = ?, cost = ?,
-               pricePerUnit = ?, isFull = ?, stationName = ?, notes = ?,
-               updatedAt = ?, isDeleted = ?, isSynced = 1,
-               firebaseId = ?, lastSyncedAt = ?
-               WHERE id = ?''',
-            [
-              entry.vehicleId,
-              entry.date.toIso8601String(),
-              entry.odometer,
-              entry.volume,
-              entry.cost,
-              entry.pricePerUnit,
-              entry.isFullTank ? 1 : 0,
-              entry.stationName,
-              entry.notes,
-              entry.updatedAt.toIso8601String(),
-              entry.isDeleted ? 1 : 0,
-              entry.firebaseId,
-              DateTime.now().toIso8601String(),
-              entry.id,
-            ],
+          await db.update(
+            FuelEntryModel.tableName,
+            entry.toMap(),
+            where: 'id = ?',
+            whereArgs: [entry.id],
           );
         }
       } catch (e) {
-        print('❌ Failed to pull fuel entry: $e');
+        debugPrint('❌ Failed to pull fuel entry: $e');
       }
     }
   }
@@ -528,7 +497,7 @@ class FirebaseSyncService {
 
   Future<void> _pushAllReminders(Database db, String userId) async {
     final rows = await db.rawQuery(ReminderModel.queryGetAll, [userId]);
-    print('📤 Pushing ${rows.length} reminders to Firestore');
+    debugPrint('📤 Pushing ${rows.length} reminders to Firestore');
 
     for (final row in rows) {
       try {
@@ -540,14 +509,14 @@ class FirebaseSyncService {
           [firebaseId, DateTime.now().toIso8601String(), reminder.id],
         );
       } catch (e) {
-        print('❌ Failed to push reminder ${row['id']}: $e');
+        debugPrint('❌ Failed to push reminder ${row['id']}: $e');
       }
     }
   }
 
   Future<void> _pushUnsyncedReminders(Database db, String userId) async {
     final rows = await db.rawQuery(ReminderModel.queryGetUnsynced, [userId]);
-    print('📤 Pushing ${rows.length} unsynced reminders to Firestore');
+    debugPrint('📤 Pushing ${rows.length} unsynced reminders to Firestore');
 
     for (final row in rows) {
       try {
@@ -567,14 +536,14 @@ class FirebaseSyncService {
           );
         }
       } catch (e) {
-        print('❌ Failed to push reminder ${row['id']}: $e');
+        debugPrint('❌ Failed to push reminder ${row['id']}: $e');
       }
     }
   }
 
   Future<void> _pullReminders(String userId, DateTime? lastSyncTime) async {
     final reminders = await FirestoreHelper.pullReminders(userId, lastSyncTime);
-    print('📥 Pulling ${reminders.length} reminders from Firestore');
+    debugPrint('📥 Pulling ${reminders.length} reminders from Firestore');
 
     final db = await _dbHelper.database;
     for (final data in reminders) {
@@ -632,7 +601,7 @@ class FirebaseSyncService {
           );
         }
       } catch (e) {
-        print('❌ Failed to pull reminder: $e');
+        debugPrint('❌ Failed to pull reminder: $e');
       }
     }
   }
@@ -641,7 +610,7 @@ class FirebaseSyncService {
 
   Future<void> _pushAllExpenses(Database db, String userId) async {
     final rows = await db.rawQuery(ExpenseModel.queryGetAll, [userId]);
-    print('📤 Pushing ${rows.length} expenses to Firestore');
+    debugPrint('📤 Pushing ${rows.length} expenses to Firestore');
 
     for (final row in rows) {
       try {
@@ -653,14 +622,14 @@ class FirebaseSyncService {
           [firebaseId, DateTime.now().toIso8601String(), expense.id],
         );
       } catch (e) {
-        print('❌ Failed to push expense ${row['id']}: $e');
+        debugPrint('❌ Failed to push expense ${row['id']}: $e');
       }
     }
   }
 
   Future<void> _pushUnsyncedExpenses(Database db, String userId) async {
     final rows = await db.rawQuery(ExpenseModel.queryGetUnsynced, [userId]);
-    print('📤 Pushing ${rows.length} unsynced expenses to Firestore');
+    debugPrint('📤 Pushing ${rows.length} unsynced expenses to Firestore');
 
     for (final row in rows) {
       try {
@@ -680,14 +649,14 @@ class FirebaseSyncService {
           );
         }
       } catch (e) {
-        print('❌ Failed to push expense ${row['id']}: $e');
+        debugPrint('❌ Failed to push expense ${row['id']}: $e');
       }
     }
   }
 
   Future<void> _pullExpenses(String userId, DateTime? lastSyncTime) async {
     final expenses = await FirestoreHelper.pullExpenses(userId, lastSyncTime);
-    print('📥 Pulling ${expenses.length} expenses from Firestore');
+    debugPrint('📥 Pulling ${expenses.length} expenses from Firestore');
 
     final db = await _dbHelper.database;
     for (final data in expenses) {
@@ -701,46 +670,21 @@ class FirebaseSyncService {
         );
 
         if (existing.isEmpty) {
-          await db.rawInsert(ExpenseModel.queryInsert, [
-            expense.id,
-            expense.vehicleId,
-            expense.userId,
-            expense.date.toIso8601String(),
-            expense.category,
-            expense.amount,
-            expense.description,
-            expense.receiptUrls.join(','),
-            expense.createdAt.toIso8601String(),
-            expense.updatedAt.toIso8601String(),
-            expense.isDeleted ? 1 : 0,
-            1, // isSynced
-            expense.firebaseId,
-            DateTime.now().toIso8601String(),
-          ]);
+          await db.insert(
+            ExpenseModel.tableName,
+            expense.toMap(),
+            conflictAlgorithm: ConflictAlgorithm.replace,
+          );
         } else {
-          await db.rawUpdate(
-            '''UPDATE expenses SET
-               vehicleId = ?, date = ?, category = ?, amount = ?,
-               description = ?, receiptUrl = ?, updatedAt = ?, isDeleted = ?,
-               isSynced = 1, firebaseId = ?, lastSyncedAt = ?
-               WHERE id = ?''',
-            [
-              expense.vehicleId,
-              expense.date.toIso8601String(),
-              expense.category,
-              expense.amount,
-              expense.description,
-              expense.receiptUrls.join(','),
-              expense.updatedAt.toIso8601String(),
-              expense.isDeleted ? 1 : 0,
-              expense.firebaseId,
-              DateTime.now().toIso8601String(),
-              expense.id,
-            ],
+          await db.update(
+            ExpenseModel.tableName,
+            expense.toMap(),
+            where: 'id = ?',
+            whereArgs: [expense.id],
           );
         }
       } catch (e) {
-        print('❌ Failed to pull expense: $e');
+        debugPrint('❌ Failed to pull expense: $e');
       }
     }
   }
@@ -749,7 +693,7 @@ class FirebaseSyncService {
 
   /// Manually trigger sync (can be called from UI or background worker)
   Future<bool> triggerManualSync() async {
-    print('🔄 Manual sync triggered');
+    debugPrint('🔄 Manual sync triggered');
     return await syncAll();
   }
 
@@ -780,7 +724,7 @@ class FirebaseSyncService {
 
       return false;
     } catch (e) {
-      print('❌ Error checking unsynced data: $e');
+      debugPrint('❌ Error checking unsynced data: $e');
       return false;
     }
   }
@@ -813,7 +757,7 @@ class FirebaseSyncService {
 
       return count;
     } catch (e) {
-      print('❌ Error getting unsynced count: $e');
+      debugPrint('❌ Error getting unsynced count: $e');
       return 0;
     }
   }
@@ -822,6 +766,6 @@ class FirebaseSyncService {
   Future<void> resetSyncState() async {
     await SharedPreferencesHelper.setFirstSyncCompleted(false);
     await SharedPreferencesHelper.setLastSyncTimestamp('');
-    print('🔄 Sync state reset');
+    debugPrint('🔄 Sync state reset');
   }
 }

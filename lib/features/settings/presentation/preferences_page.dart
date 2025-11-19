@@ -140,7 +140,7 @@ class _PreferencesPageState extends State<PreferencesPage> {
                         leading: CircleAvatar(
                           backgroundColor: isSelected
                               ? Theme.of(context).colorScheme.primary
-                              : Theme.of(context).colorScheme.surfaceVariant,
+                              : Theme.of(context).colorScheme.surfaceContainerHighest,
                           child: Text(
                             currency['symbol']!,
                             style: TextStyle(
@@ -181,7 +181,7 @@ class _PreferencesPageState extends State<PreferencesPage> {
                         leading: CircleAvatar(
                           backgroundColor: isSelected
                               ? Theme.of(context).colorScheme.secondary
-                              : Theme.of(context).colorScheme.surfaceVariant,
+                              : Theme.of(context).colorScheme.surfaceContainerHighest,
                           child: Icon(
                             Icons.local_gas_station,
                             color: isSelected
@@ -219,7 +219,7 @@ class _PreferencesPageState extends State<PreferencesPage> {
                         leading: CircleAvatar(
                           backgroundColor: isSelected
                               ? Theme.of(context).colorScheme.tertiary
-                              : Theme.of(context).colorScheme.surfaceVariant,
+                              : Theme.of(context).colorScheme.surfaceContainerHighest,
                           child: Icon(
                             Icons.speed,
                             color: isSelected

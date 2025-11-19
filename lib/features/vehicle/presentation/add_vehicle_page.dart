@@ -140,7 +140,7 @@ class _AddVehiclePageState extends State<AddVehiclePage> {
                           labelText: 'Make',
                           hintText: 'Toyota',
                           filled: true,
-                          fillColor: colorScheme.surfaceContainerHighest.withOpacity(0.3),
+                          fillColor: colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                             borderSide: BorderSide.none,
@@ -160,7 +160,7 @@ class _AddVehiclePageState extends State<AddVehiclePage> {
                           labelText: 'Model',
                           hintText: 'Camry',
                           filled: true,
-                          fillColor: colorScheme.surfaceContainerHighest.withOpacity(0.3),
+                          fillColor: colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                             borderSide: BorderSide.none,
@@ -184,7 +184,7 @@ class _AddVehiclePageState extends State<AddVehiclePage> {
                           labelText: 'Year',
                           hintText: '2023',
                           filled: true,
-                          fillColor: colorScheme.surfaceContainerHighest.withOpacity(0.3),
+                          fillColor: colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                             borderSide: BorderSide.none,
@@ -210,7 +210,7 @@ class _AddVehiclePageState extends State<AddVehiclePage> {
                           labelText: 'Color',
                           hintText: 'Black',
                           filled: true,
-                          fillColor: colorScheme.surfaceContainerHighest.withOpacity(0.3),
+                          fillColor: colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                             borderSide: BorderSide.none,
@@ -238,7 +238,7 @@ class _AddVehiclePageState extends State<AddVehiclePage> {
                     labelText: 'VIN (Optional)',
                     hintText: '17-character VIN',
                     filled: true,
-                    fillColor: colorScheme.surfaceContainerHighest.withOpacity(0.3),
+                    fillColor: colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: BorderSide.none,
@@ -255,7 +255,7 @@ class _AddVehiclePageState extends State<AddVehiclePage> {
                     labelText: 'License Plate (Optional)',
                     hintText: 'ABC-1234',
                     filled: true,
-                    fillColor: colorScheme.surfaceContainerHighest.withOpacity(0.3),
+                    fillColor: colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: BorderSide.none,
@@ -266,11 +266,11 @@ class _AddVehiclePageState extends State<AddVehiclePage> {
                 ),
                 const SizedBox(height: 16),
                 DropdownButtonFormField<String>(
-                  value: _fuelType,
+                  initialValue: _fuelType,
                   decoration: InputDecoration(
                     labelText: 'Fuel Type',
                     filled: true,
-                    fillColor: colorScheme.surfaceContainerHighest.withOpacity(0.3),
+                    fillColor: colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: BorderSide.none,
@@ -305,7 +305,7 @@ class _AddVehiclePageState extends State<AddVehiclePage> {
                     labelText: 'Current Odometer',
                     suffixText: 'km',
                     filled: true,
-                    fillColor: colorScheme.surfaceContainerHighest.withOpacity(0.3),
+                    fillColor: colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: BorderSide.none,

@@ -1,5 +1,6 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:uuid/uuid.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
 import '../../../common/data/database_helper.dart';
@@ -54,7 +55,7 @@ class ReminderService {
       try {
         await _syncReminderToFirestore(reminder);
       } catch (e) {
-        print('Sync failed: $e');
+        debugPrint('Sync failed: $e');
       }
     }
 
@@ -147,7 +148,7 @@ class ReminderService {
       try {
         await _syncReminderToFirestore(updatedReminder);
       } catch (e) {
-        print('Sync failed: $e');
+        debugPrint('Sync failed: $e');
       }
     }
   }
@@ -180,7 +181,7 @@ class ReminderService {
           await _syncReminderToFirestore(updated);
         }
       } catch (e) {
-        print('Sync failed: $e');
+        debugPrint('Sync failed: $e');
       }
     }
   }
@@ -205,7 +206,7 @@ class ReminderService {
           await _syncReminderToFirestore(updated);
         }
       } catch (e) {
-        print('Sync failed: $e');
+        debugPrint('Sync failed: $e');
       }
     }
   }
@@ -228,7 +229,7 @@ class ReminderService {
       try {
         await _deleteFromFirestore(reminder.userId, reminder.firebaseId!);
       } catch (e) {
-        print('Sync failed: $e');
+        debugPrint('Sync failed: $e');
       }
     }
   }
@@ -262,12 +263,12 @@ class ReminderService {
           sound: true,
         );
 
-    print('✅ Notifications initialized');
+    debugPrint('✅ Notifications initialized');
   }
 
   /// Handle notification tap
   void _onNotificationTapped(NotificationResponse response) {
-    print('Notification tapped: ${response.payload}');
+    debugPrint('Notification tapped: ${response.payload}');
     // Handle navigation based on payload
   }
 
@@ -314,10 +315,10 @@ class ReminderService {
           payload: reminder.id,
         );
 
-        print('✅ Notification scheduled for ${reminder.title} at $notificationDate');
+        debugPrint('✅ Notification scheduled for ${reminder.title} at $notificationDate');
       }
     } catch (e) {
-      print('❌ Error scheduling notification: $e');
+      debugPrint('❌ Error scheduling notification: $e');
     }
   }
 
@@ -325,9 +326,9 @@ class ReminderService {
   Future<void> _cancelNotification(String reminderId) async {
     try {
       await _notificationsPlugin.cancel(reminderId.hashCode);
-      print('✅ Notification canceled for reminder: $reminderId');
+      debugPrint('✅ Notification canceled for reminder: $reminderId');
     } catch (e) {
-      print('❌ Error canceling notification: $e');
+      debugPrint('❌ Error canceling notification: $e');
     }
   }
 
@@ -335,9 +336,9 @@ class ReminderService {
   Future<void> cancelAllNotifications() async {
     try {
       await _notificationsPlugin.cancelAll();
-      print('✅ All notifications canceled');
+      debugPrint('✅ All notifications canceled');
     } catch (e) {
-      print('❌ Error canceling all notifications: $e');
+      debugPrint('❌ Error canceling all notifications: $e');
     }
   }
 
@@ -432,7 +433,7 @@ class ReminderService {
         final reminder = ReminderModel.fromMap(row);
         await _syncReminderToFirestore(reminder);
       } catch (e) {
-        print('Failed to sync reminder: $e');
+        debugPrint('Failed to sync reminder: $e');
       }
     }
   }

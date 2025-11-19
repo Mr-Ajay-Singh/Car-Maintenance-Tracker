@@ -1,4 +1,5 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:sqflite/sqflite.dart';
 import '../../../common/data/database_helper.dart';
 import '../../../common/data/firestore_helper.dart';
 import '../data/models/expense_model.dart';
@@ -11,27 +12,11 @@ class ExpenseService {
   Future<String> addExpense(ExpenseModel expense) async {
     final db = await _dbHelper.database;
 
-    await db.rawInsert(ExpenseModel.queryInsert, [
-      expense.id,
-      expense.vehicleId,
-      expense.userId,
-      expense.date.toIso8601String(),
-      expense.category,
-      expense.amount,
-      expense.currency,
-      expense.description,
-      expense.vendor,
-      expense.notes,
-      expense.receiptUrls.join(','),
-      expense.isRecurring ? 1 : 0,
-      expense.recurringPeriod,
-      expense.createdAt.toIso8601String(),
-      expense.updatedAt.toIso8601String(),
-      expense.isDeleted ? 1 : 0,
-      expense.isSynced ? 1 : 0,
-      expense.firebaseId,
-      expense.lastSyncedAt?.toIso8601String(),
-    ]);
+    await db.insert(
+      ExpenseModel.tableName,
+      expense.toMap(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
 
     // Try to sync immediately if online
     if (await _isOnline()) {
@@ -154,20 +139,12 @@ class ExpenseService {
       isSynced: false,
     );
 
-    await db.rawUpdate(ExpenseModel.queryUpdate, [
-      updatedExpense.date.toIso8601String(),
-      updatedExpense.category,
-      updatedExpense.amount,
-      updatedExpense.currency,
-      updatedExpense.description,
-      updatedExpense.vendor,
-      updatedExpense.notes,
-      updatedExpense.receiptUrls.join(','),
-      updatedExpense.isRecurring ? 1 : 0,
-      updatedExpense.recurringPeriod,
-      updatedExpense.updatedAt.toIso8601String(),
-      updatedExpense.id,
-    ]);
+    await db.update(
+      ExpenseModel.tableName,
+      updatedExpense.toMap(),
+      where: 'id = ?',
+      whereArgs: [updatedExpense.id],
+    );
 
     // Try to sync immediately if online
     if (await _isOnline()) {
