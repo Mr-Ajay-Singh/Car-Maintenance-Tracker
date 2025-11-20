@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import 'package:in_app_review/in_app_review.dart';
@@ -53,12 +54,15 @@ class RevenueCatUtils {
       await prefs.setBool('is_premium', hasEntitlement);
 
       // Priority 1: Try to show rating dialog first (for all users)
-      bool ratingShown = await _showRatingIfEligible();
+      // bool ratingShown = await _showRatingIfEligible();
 
       // Priority 2: If rating was not shown and user is not premium, show paywall
-      if (!ratingShown && !hasEntitlement) {
-        print("==> Showing paywall");
-        await showPaywall();
+      if (!hasEntitlement) {
+        if(FirebaseAuth.instance.currentUser != null) {
+          await showPaywall();
+        }
+      }else{
+        await _showRatingIfEligible();
       }
     } catch (e) {
       debugPrint('Error syncing RevenueCat premium status: $e');
