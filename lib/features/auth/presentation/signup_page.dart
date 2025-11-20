@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import '../../../common/utils/platform_utils.dart';
 import '../service/auth_provider.dart';
+import 'widgets/social_auth_button.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -47,6 +49,38 @@ class _SignUpPageState extends State<SignUpPage> {
           ),
         );
       }
+    }
+  }
+
+  Future<void> _handleGoogleSignUp() async {
+    final authProvider = context.read<AuthProvider>();
+    final success = await authProvider.signInWithGoogle();
+
+    if (success && mounted) {
+      context.go('/');
+    } else if (mounted && authProvider.errorMessage != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(authProvider.errorMessage!),
+          backgroundColor: Theme.of(context).colorScheme.error,
+        ),
+      );
+    }
+  }
+
+  Future<void> _handleAppleSignUp() async {
+    final authProvider = context.read<AuthProvider>();
+    final success = await authProvider.signInWithApple();
+
+    if (success && mounted) {
+      context.go('/');
+    } else if (mounted && authProvider.errorMessage != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(authProvider.errorMessage!),
+          backgroundColor: Theme.of(context).colorScheme.error,
+        ),
+      );
     }
   }
 
@@ -252,6 +286,67 @@ class _SignUpPageState extends State<SignUpPage> {
                           ),
                   ),
                   const SizedBox(height: 24),
+
+                  // Divider with OR
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Divider(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .outline
+                              .withValues(alpha: 0.3),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: Text(
+                          'OR',
+                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onSurface
+                                    .withValues(alpha: 0.6),
+                              ),
+                        ),
+                      ),
+                      Expanded(
+                        child: Divider(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .outline
+                              .withValues(alpha: 0.3),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+
+                  // Google Sign-Up Button
+                  SocialAuthButton(
+                    text: 'Sign up with Google',
+                    icon: Icons.g_mobiledata_rounded,
+                    backgroundColor: Colors.white,
+                    textColor: Colors.black87,
+                    onPressed: _handleGoogleSignUp,
+                    isLoading: authProvider.isLoading,
+                  ),
+                  const SizedBox(height: 12),
+
+                  // Apple Sign-Up Button (iOS only)
+                  if (PlatformUtils.isAppleSignInAvailable)
+                    SocialAuthButton(
+                      text: 'Sign up with Apple',
+                      icon: Icons.apple,
+                      backgroundColor: Colors.black,
+                      textColor: Colors.white,
+                      onPressed: _handleAppleSignUp,
+                      isLoading: authProvider.isLoading,
+                    ),
+                  if (PlatformUtils.isAppleSignInAvailable)
+                    const SizedBox(height: 24),
+                  if (!PlatformUtils.isAppleSignInAvailable)
+                    const SizedBox(height: 24),
 
                   // Sign In Link
                   Row(

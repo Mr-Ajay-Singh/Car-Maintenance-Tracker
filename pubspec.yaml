@@ -75,6 +75,8 @@ dependencies:
   mixpanel_flutter: ^2.3.0
   purchases_flutter: ^8.2.1
   purchases_ui_flutter: ^8.2.1
+  google_sign_in: ^6.2.1
+  sign_in_with_apple: ^6.1.2
 
 dev_dependencies:
   flutter_test:

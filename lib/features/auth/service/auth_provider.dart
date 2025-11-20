@@ -140,6 +140,92 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
+  /// Sign in with Google
+  Future<bool> signInWithGoogle() async {
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      final userId = await _authService.signInWithGoogle();
+
+      if (userId != null) {
+        final user = _authService.getCurrentUser();
+        if (user != null) {
+          _currentUser = UserModel(
+            id: user.uid,
+            email: user.email ?? '',
+            displayName: user.displayName,
+            createdAt: user.metadata.creationTime ?? DateTime.now(),
+            lastLoginAt: DateTime.now(),
+          );
+          _isLoading = false;
+          notifyListeners();
+
+          // Trigger background sync after successful login
+          _syncService.syncAll().catchError((e) {
+            print('Background sync failed: $e');
+            return false;
+          });
+
+          return true;
+        }
+      }
+
+      _isLoading = false;
+      notifyListeners();
+      return false;
+    } catch (e) {
+      _errorMessage = e.toString();
+      _isLoading = false;
+      notifyListeners();
+      return false;
+    }
+  }
+
+  /// Sign in with Apple (iOS only)
+  Future<bool> signInWithApple() async {
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      final userId = await _authService.signInWithApple();
+
+      if (userId != null) {
+        final user = _authService.getCurrentUser();
+        if (user != null) {
+          _currentUser = UserModel(
+            id: user.uid,
+            email: user.email ?? '',
+            displayName: user.displayName,
+            createdAt: user.metadata.creationTime ?? DateTime.now(),
+            lastLoginAt: DateTime.now(),
+          );
+          _isLoading = false;
+          notifyListeners();
+
+          // Trigger background sync after successful login
+          _syncService.syncAll().catchError((e) {
+            print('Background sync failed: $e');
+            return false;
+          });
+
+          return true;
+        }
+      }
+
+      _isLoading = false;
+      notifyListeners();
+      return false;
+    } catch (e) {
+      _errorMessage = e.toString();
+      _isLoading = false;
+      notifyListeners();
+      return false;
+    }
+  }
+
   /// Sign out
   Future<void> signOut() async {
     _isLoading = true;

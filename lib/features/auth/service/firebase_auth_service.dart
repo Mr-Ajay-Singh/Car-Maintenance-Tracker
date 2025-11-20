@@ -1,5 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import '../../../common/data/shared_preferences_helper.dart';
+import '../../../common/utils/platform_utils.dart';
 
 /// FirebaseAuthService - Authentication with first sign-in detection
 ///
@@ -8,6 +11,7 @@ import '../../../common/data/shared_preferences_helper.dart';
 /// - Returning user: Incremental sync (O(k) - fast)
 class FirebaseAuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
 
   // ==================== SIGN UP ====================
 
@@ -68,11 +72,147 @@ class FirebaseAuthService {
     }
   }
 
+  // ==================== SOCIAL SIGN-IN ====================
+
+  /// Sign in with Google
+  /// Works on both iOS and Android
+  Future<String?> signInWithGoogle() async {
+    try {
+      // Trigger Google Sign-In flow
+      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+
+      if (googleUser == null) {
+        // User canceled the sign-in
+        return null;
+      }
+
+      // Obtain auth details from request
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
+
+      // Create a new credential
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      // Sign in to Firebase with the Google credential
+      final UserCredential userCredential =
+          await _auth.signInWithCredential(credential);
+
+      final String userId = userCredential.user!.uid;
+      final String email = userCredential.user!.email ?? googleUser.email;
+
+      // Store user data locally
+      await SharedPreferencesHelper.setUserId(userId);
+      await SharedPreferencesHelper.setUserEmail(email);
+      await SharedPreferencesHelper.setIsLoggedIn(true);
+
+      // Check if this is a new user (first sign-in)
+      if (userCredential.additionalUserInfo?.isNewUser ?? false) {
+        await SharedPreferencesHelper.setIsFirstSignIn(true);
+      }
+
+      return userId;
+    } on FirebaseAuthException catch (e) {
+      throw _handleAuthException(e);
+    } catch (e) {
+      throw Exception('Google sign-in failed: $e');
+    }
+  }
+
+  /// Sign in with Apple
+  /// Only available on iOS
+  Future<String?> signInWithApple() async {
+    if (!PlatformUtils.isAppleSignInAvailable) {
+      throw Exception('Apple Sign-In is only available on iOS');
+    }
+
+    try {
+      // Check if Apple Sign-In is available
+      final isAvailable = await SignInWithApple.isAvailable();
+      if (!isAvailable) {
+        throw Exception('Apple Sign-In is not available on this device');
+      }
+
+      // Request Apple ID credential
+      final appleCredential = await SignInWithApple.getAppleIDCredential(
+        scopes: [
+          AppleIDAuthorizationScopes.email,
+          AppleIDAuthorizationScopes.fullName,
+        ],
+      );
+
+      // Create OAuth credential for Firebase
+      final oauthCredential = OAuthProvider('apple.com').credential(
+        idToken: appleCredential.identityToken,
+        accessToken: appleCredential.authorizationCode,
+      );
+
+      // Sign in to Firebase with the Apple credential
+      final UserCredential userCredential =
+          await _auth.signInWithCredential(oauthCredential);
+
+      final String userId = userCredential.user!.uid;
+      final String email = userCredential.user!.email ??
+          appleCredential.email ??
+          '$userId@privaterelay.appleid.com';
+
+      // Store user data locally
+      await SharedPreferencesHelper.setUserId(userId);
+      await SharedPreferencesHelper.setUserEmail(email);
+      await SharedPreferencesHelper.setIsLoggedIn(true);
+
+      // Check if this is a new user (first sign-in)
+      if (userCredential.additionalUserInfo?.isNewUser ?? false) {
+        await SharedPreferencesHelper.setIsFirstSignIn(true);
+      }
+
+      // Update display name if provided by Apple
+      if (appleCredential.givenName != null ||
+          appleCredential.familyName != null) {
+        final displayName =
+            '${appleCredential.givenName ?? ''} ${appleCredential.familyName ?? ''}'
+                .trim();
+        if (displayName.isNotEmpty) {
+          await userCredential.user!.updateDisplayName(displayName);
+        }
+      }
+
+      return userId;
+    } on FirebaseAuthException catch (e) {
+      throw _handleAuthException(e);
+    } on SignInWithAppleAuthorizationException catch (e) {
+      switch (e.code) {
+        case AuthorizationErrorCode.canceled:
+          return null; // User canceled
+        case AuthorizationErrorCode.failed:
+          throw Exception('Apple Sign-In failed');
+        case AuthorizationErrorCode.invalidResponse:
+          throw Exception('Invalid response from Apple');
+        case AuthorizationErrorCode.notHandled:
+          throw Exception('Apple Sign-In not handled');
+        case AuthorizationErrorCode.unknown:
+          throw Exception('Unknown Apple Sign-In error');
+        default:
+          throw Exception('Apple Sign-In error: ${e.code}');
+      }
+    } catch (e) {
+      throw Exception('Apple sign-in failed: $e');
+    }
+  }
+
   // ==================== SIGN OUT ====================
 
   /// Sign out user and clear local data
   Future<void> signOut() async {
     try {
+      // Sign out from Google if signed in
+      if (await _googleSignIn.isSignedIn()) {
+        await _googleSignIn.signOut();
+      }
+
+      // Sign out from Firebase
       await _auth.signOut();
       await SharedPreferencesHelper.clearAllUserData();
     } catch (e) {
