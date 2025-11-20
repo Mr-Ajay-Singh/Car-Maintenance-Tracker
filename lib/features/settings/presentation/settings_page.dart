@@ -16,15 +16,9 @@ class SettingsPage extends StatelessWidget {
       backgroundColor: colorScheme.surface,
       body: CustomScrollView(
         slivers: [
-          SliverAppBar.large(
-            title: const Text('Settings'),
-            centerTitle: false,
-            backgroundColor: colorScheme.surface,
-            surfaceTintColor: Colors.transparent,
-          ),
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              padding: const EdgeInsets.symmetric(horizontal: 16.0,vertical: 10),
               child: Column(
                 children: [
                   // User Profile Card
