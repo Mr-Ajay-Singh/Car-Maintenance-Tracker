@@ -1,3 +1,4 @@
+import 'package:car_maintenance_tracker/utils/revenue_cat_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
@@ -25,6 +26,9 @@ void main() async {
   } catch (e) {
     debugPrint('Firebase initialization failed: $e');
   }
+
+  await RevenueCatUtils.initialize();
+  await RevenueCatUtils.syncPremiumStatus();
 
   runApp(const MyApp());
 }

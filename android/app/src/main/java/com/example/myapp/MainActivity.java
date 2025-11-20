@@ -3,11 +3,11 @@ package com.invictus.carmaintenance;
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
 import android.content.Intent;
-import io.flutter.embedding.android.FlutterActivity;
+import io.flutter.embedding.android.FlutterFragmentActivity;
 import io.flutter.embedding.engine.FlutterEngine;
 import io.flutter.plugin.common.MethodChannel;
 
-public class MainActivity extends FlutterActivity {
+public class MainActivity extends FlutterFragmentActivity {
     private void setupWidgetMethodChannel(FlutterEngine flutterEngine) {
         new MethodChannel(flutterEngine.getDartExecutor().getBinaryMessenger(), "com.invictus.carmaintenance/widget")
                 .setMethodCallHandler((call, result) -> {

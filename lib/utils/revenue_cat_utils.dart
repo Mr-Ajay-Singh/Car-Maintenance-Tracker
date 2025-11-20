@@ -7,7 +7,7 @@ import 'package:purchases_ui_flutter/purchases_ui_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class RevenueCatConfig {
-  static const String apiKeyAndroid = 'goog_jHOOxYAnPdwigoJPTqmjSbnHojp';
+  static const String apiKeyAndroid = 'goog_IVXpdwuNAMNwSFRjeliFoofEzcj';
   static const String apiKeyIOS = 'appl_otfrLIfyfMbYXZJgyaBfrDVmHbG';
   static const String entitlementId = 'Premium';
 }
@@ -57,6 +57,7 @@ class RevenueCatUtils {
 
       // Priority 2: If rating was not shown and user is not premium, show paywall
       if (!ratingShown && !hasEntitlement) {
+        print("==> Showing paywall");
         await showPaywall();
       }
     } catch (e) {
