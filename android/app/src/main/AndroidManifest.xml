@@ -8,7 +8,7 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     
     <application
-        android:label="carmaintenance Tracker"
+        android:label="CarLog"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher_round"
         android:logo="@mipmap/ic_launcher"
