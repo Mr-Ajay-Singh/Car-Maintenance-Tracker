@@ -152,7 +152,7 @@ class ExpenseModel {
       userId: map['userId'] as String,
       date: DateTime.parse(map['date'] as String),
       category: map['category'] as String,
-      amount: map['amount'] as double,
+      amount: (map['amount'] as num).toDouble(),
       currency: map['currency'] as String? ?? 'USD',
       description: map['description'] as String?,
       vendor: map['vendor'] as String?,

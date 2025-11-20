@@ -200,7 +200,7 @@ class ServiceEntryModel {
       odometer: map['odometer'] as int,
       serviceType: map['serviceType'] as String,
       parts: partsFromJson(map['parts'] as String?),
-      totalCost: map['totalCost'] as double,
+      totalCost: (map['totalCost'] as num).toDouble(),
       shopId: map['shopId'] as String?,
       shopName: map['shopName'] as String?,
       notes: map['notes'] as String?,

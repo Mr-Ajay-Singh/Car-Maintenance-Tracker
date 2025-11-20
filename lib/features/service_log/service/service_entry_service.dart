@@ -111,7 +111,7 @@ class ServiceEntryService {
       ],
     );
     if (results.isEmpty || results.first['total'] == null) return 0.0;
-    return results.first['total'] as double;
+    return (results.first['total'] as num).toDouble();
   }
 
   // UPDATE

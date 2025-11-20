@@ -7,7 +7,7 @@ import '../data/models/expense_model.dart';
 
 /// ExpenseService - Service class for expense tracking and statistics
 class ExpenseService {
-  final DatabaseHelper _dbHelper = DatabaseHelper();
+  final DatabaseHelper _dbHelper = DatabaseHelper.instance;
 
   // CREATE
   Future<String> addExpense(ExpenseModel expense) async {
@@ -104,7 +104,7 @@ class ExpenseService {
       ],
     );
     if (results.isEmpty || results.first['total'] == null) return 0.0;
-    return results.first['total'] as double;
+    return (results.first['total'] as num).toDouble();
   }
 
   Future<Map<String, double>> getExpenseTotalsByCategory(
@@ -125,7 +125,7 @@ class ExpenseService {
     final categoryTotals = <String, double>{};
     for (final row in results) {
       final category = row['category'] as String;
-      final total = row['total'] as double;
+      final total = (row['total'] as num).toDouble();
       categoryTotals[category] = total;
     }
 

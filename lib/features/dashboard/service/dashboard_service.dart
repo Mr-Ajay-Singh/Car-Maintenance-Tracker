@@ -1,4 +1,5 @@
 import 'package:uuid/uuid.dart';
+import '../../../common/data/database_helper.dart';
 import '../../expenses/data/models/expense_model.dart';
 import '../../expenses/service/expense_service.dart';
 import '../../fuel/data/models/fuel_entry_model.dart';
@@ -22,6 +23,9 @@ class DashboardService {
 
   /// Get complete dashboard summary for a user
   Future<DashboardSummaryModel> getDashboardSummary(String userId) async {
+    // MIGRATION: Fix empty vehicleId fields in existing records
+    await _migrateEmptyVehicleIds(userId);
+
     // Get all vehicles
     final vehicles = await _vehicleService.getAllVehicles(userId);
 
@@ -206,8 +210,9 @@ class DashboardService {
     if (vehicles.isEmpty) return null;
 
     final now = DateTime.now();
-    // Use a far past date to get "All Time" stats
+    // Use a far future date to get "All Time" stats
     final allTimeStart = DateTime(2000);
+    final allTimeEnd = DateTime(2100);
 
     double totalCost = 0;
     double totalVolume = 0;
@@ -217,12 +222,12 @@ class DashboardService {
       final cost = await _fuelService.getTotalCost(
         vehicle.id,
         allTimeStart,
-        now,
+        allTimeEnd,
       );
       final volume = await _fuelService.getTotalVolume(
         vehicle.id,
         allTimeStart,
-        now,
+        allTimeEnd,
       );
       final avgEconomy = await _fuelService.getAverageFuelEconomy(vehicle.id);
 
@@ -250,8 +255,9 @@ class DashboardService {
     if (vehicles.isEmpty) return null;
 
     final now = DateTime.now();
-    // Use a far past date to get "All Time" stats
+    // Use a far future date to get "All Time" stats
     final allTimeStart = DateTime(2000);
+    final allTimeEnd = DateTime(2100);
 
     double totalExpenses = 0;
     double serviceExpenses = 0;
@@ -263,7 +269,7 @@ class DashboardService {
       final serviceCost = await _serviceService.getTotalCost(
         vehicle.id,
         allTimeStart,
-        now,
+        allTimeEnd,
       );
       serviceExpenses += serviceCost;
 
@@ -271,7 +277,7 @@ class DashboardService {
       final fuelCost = await _fuelService.getTotalCost(
         vehicle.id,
         allTimeStart,
-        now,
+        allTimeEnd,
       );
       fuelExpenses += fuelCost;
 
@@ -279,7 +285,7 @@ class DashboardService {
       final expenses = await _expenseService.getTotalExpenses(
         vehicle.id,
         allTimeStart,
-        now,
+        allTimeEnd,
       );
       otherExpenses += expenses;
     }
@@ -371,5 +377,35 @@ class DashboardService {
     );
 
     await _expenseService.addExpense(expense);
+  }
+
+  /// Migration: Fix empty vehicleId fields in existing records
+  Future<void> _migrateEmptyVehicleIds(String userId) async {
+    final dbHelper = DatabaseHelper.instance;
+    final db = await dbHelper.database;
+
+    // Get the first vehicle for this user
+    final vehicles = await _vehicleService.getAllVehicles(userId);
+    if (vehicles.isEmpty) return;
+
+    final firstVehicleId = vehicles.first.id;
+
+    // Update fuel entries with empty vehicleId
+    await db.rawUpdate(
+      'UPDATE fuel_entries SET vehicleId = ? WHERE userId = ? AND (vehicleId IS NULL OR vehicleId = "")',
+      [firstVehicleId, userId],
+    );
+
+    // Update service entries with empty vehicleId
+    await db.rawUpdate(
+      'UPDATE service_entries SET vehicleId = ? WHERE userId = ? AND (vehicleId IS NULL OR vehicleId = "")',
+      [firstVehicleId, userId],
+    );
+
+    // Update expenses with empty vehicleId
+    await db.rawUpdate(
+      'UPDATE expenses SET vehicleId = ? WHERE userId = ? AND (vehicleId IS NULL OR vehicleId = "")',
+      [firstVehicleId, userId],
+    );
   }
 }

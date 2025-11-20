@@ -106,7 +106,7 @@ class FuelEntryService {
       ],
     );
     if (results.isEmpty || results.first['total'] == null) return 0.0;
-    return results.first['total'] as double;
+    return (results.first['total'] as num).toDouble();
   }
 
   Future<double> getTotalVolume(
@@ -124,7 +124,7 @@ class FuelEntryService {
       ],
     );
     if (results.isEmpty || results.first['total'] == null) return 0.0;
-    return results.first['total'] as double;
+    return (results.first['total'] as num).toDouble();
   }
 
   Future<double> getAveragePrice(
@@ -142,7 +142,7 @@ class FuelEntryService {
       ],
     );
     if (results.isEmpty || results.first['average'] == null) return 0.0;
-    return results.first['average'] as double;
+    return (results.first['average'] as num).toDouble();
   }
 
   Future<double> getAverageFuelEconomy(String vehicleId) async {
