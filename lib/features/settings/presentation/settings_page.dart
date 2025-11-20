@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../auth/service/auth_provider.dart';
 
 class SettingsPage extends StatelessWidget {
@@ -39,15 +40,6 @@ class SettingsPage extends StatelessWidget {
                     [
                       _buildSettingsTile(
                         context,
-                        icon: Icons.person_outline,
-                        title: 'Profile',
-                        subtitle: 'Manage your account information',
-                        onTap: () => context.go('/settings/profile'),
-                        iconColor: Colors.blue,
-                      ),
-                      _buildDivider(context),
-                      _buildSettingsTile(
-                        context,
                         icon: Icons.tune,
                         title: 'Preferences',
                         subtitle: 'Currency, units, and more',
@@ -77,18 +69,27 @@ class SettingsPage extends StatelessWidget {
 
                   const SizedBox(height: 24),
 
-                  // About Section
-                  _buildSectionHeader(context, 'About'),
+                  // Legal Section
+                  _buildSectionHeader(context, 'Legal'),
                   _buildSettingsGroup(
                     context,
                     [
                       _buildSettingsTile(
                         context,
-                        icon: Icons.info_outline,
-                        title: 'About',
-                        subtitle: 'Version and app information',
-                        onTap: () => context.go('/settings/about'),
-                        iconColor: Colors.orange,
+                        icon: Icons.privacy_tip_outlined,
+                        title: 'Privacy Policy',
+                        subtitle: 'Read our privacy policy',
+                        onTap: () => _launchUrl(context, 'https://www.google.com'),
+                        iconColor: Colors.blueGrey,
+                      ),
+                      _buildDivider(context),
+                      _buildSettingsTile(
+                        context,
+                        icon: Icons.description_outlined,
+                        title: 'Terms & Conditions',
+                        subtitle: 'Read our terms of service',
+                        onTap: () => _launchUrl(context, 'https://www.google.com'),
+                        iconColor: Colors.blueGrey,
                       ),
                     ],
                   ),
@@ -354,5 +355,24 @@ class SettingsPage extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future<void> _launchUrl(BuildContext context, String urlString) async {
+    try {
+      final Uri url = Uri.parse(urlString);
+      if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Could not launch $urlString')),
+          );
+        }
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error launching URL: $e')),
+        );
+      }
+    }
   }
 }
